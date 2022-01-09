@@ -1,7 +1,7 @@
 package com.creativehub.backend.controllers;
 
-import com.creativehub.backend.models.User;
 import com.creativehub.backend.services.UserManager;
+import com.creativehub.backend.services.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,22 +17,22 @@ public class UserController {
 	private UserManager userManager;
 
 	@GetMapping("/")
-	public List<User> getAllUsers() {
+	public List<UserDto> getAllUsers() {
 		return userManager.findAll();
 	}
 
 	@PostMapping("/create")
-	public User createUser(@RequestBody User user) {
+	public UserDto createUser(@RequestBody UserDto user) {
 		return userManager.save(user);
 	}
 
 	@GetMapping("/{id}")
-	public User getUser(@PathVariable long id) {
+	public UserDto getUser(@PathVariable long id) {
 		return userManager.findById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
 	}
 
 	@PutMapping("/{id}")
-	public User updateUser(@PathVariable long id, @RequestBody User user) {
+	public UserDto updateUser(@PathVariable long id, @RequestBody UserDto user) {
 		return userManager.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
 	}
 

@@ -1,20 +1,20 @@
 package com.creativehub.backend.services;
 
-import com.creativehub.backend.models.User;
+import com.creativehub.backend.services.dto.UserDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserManager {
-	List<User> findAll();
+	List<UserDto> findAll();
 
-	User save(User user);
+	UserDto save(UserDto user);
 
-	Optional<User> findById(long id);
+	Optional<UserDto> findById(long id);
 
 	boolean existsById(long id);
 
 	Optional<Boolean> deleteById(long id);
 
-	Optional<User> updateUser(long id, User update);
+	Optional<UserDto> updateUser(long id, UserDto update);
 }

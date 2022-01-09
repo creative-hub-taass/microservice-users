@@ -36,9 +36,8 @@ public class Creator {
 	@Column(name = "creator_type", nullable = false)
 	private CreatorType creatorType;
 
-	@Lob
-	@Column(name = "avatar", nullable = false)
-	private byte[] avatar;
+	@Column(name = "avatar", nullable = false, columnDefinition="TEXT")
+	private String avatar;
 
 	@Override
 	public boolean equals(Object o) {

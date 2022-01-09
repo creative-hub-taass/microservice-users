@@ -1,30 +1,34 @@
 package com.creativehub.backend.services.impl;
 
-import com.creativehub.backend.models.User;
 import com.creativehub.backend.repositories.UserRepository;
 import com.creativehub.backend.services.UserManager;
+import com.creativehub.backend.services.dto.UserDto;
+import com.creativehub.backend.services.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserManagerImpl implements UserManager {
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private UserMapper userMapper;
 
-	public List<User> findAll() {
-		return userRepository.findAll();
+	public List<UserDto> findAll() {
+		return userRepository.findAll().stream().map(userMapper::userToUserDto).collect(Collectors.toList());
 	}
 
-	public User save(User user) {
-		return userRepository.save(user);
+	public UserDto save(UserDto user) {
+		return userMapper.userToUserDto(userRepository.save(userMapper.userDtoToUser(user)));
 	}
 
 	@Override
-	public Optional<User> findById(long id) {
-		return userRepository.findById(id);
+	public Optional<UserDto> findById(long id) {
+		return userRepository.findById(id).map(userMapper::userToUserDto);
 	}
 
 	@Override
@@ -41,13 +45,10 @@ public class UserManagerImpl implements UserManager {
 	}
 
 	@Override
-	public Optional<User> updateUser(long id, User update) {
+	public Optional<UserDto> updateUser(long id, UserDto update) {
 		return userRepository.findById(id).map(user -> {
-			user.setEmail(update.getEmail());
-			user.setUsername(update.getUsername());
-			user.setNickname(update.getNickname());
-			//TODO
-			return userRepository.save(user);
+			userMapper.updateUserFromUserDto(update, user);
+			return userMapper.userToUserDto(userRepository.save(user));
 		});
 	}
 }
