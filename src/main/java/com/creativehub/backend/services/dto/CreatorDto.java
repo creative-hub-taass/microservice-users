@@ -1,6 +1,6 @@
 package com.creativehub.backend.services.dto;
 
-import com.creativehub.backend.models.CreatorType;
+import com.creativehub.backend.models.enums.CreatorType;
 import lombok.Data;
 
 import java.io.Serializable;

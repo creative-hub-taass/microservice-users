@@ -1,5 +1,6 @@
 package com.creativehub.backend.models;
 
+import com.creativehub.backend.models.enums.CreatorType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

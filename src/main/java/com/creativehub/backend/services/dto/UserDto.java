@@ -1,6 +1,6 @@
 package com.creativehub.backend.services.dto;
 
-import com.creativehub.backend.models.Role;
+import com.creativehub.backend.models.enums.Role;
 import lombok.Data;
 
 import java.io.Serializable;
