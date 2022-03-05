@@ -52,6 +52,6 @@ public class RichiestaUpgrade {
 	private String avatar;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "statusRichiestaUpgrade", nullable = false)
-	private StatusRichiestaUpgrade statusRichiestaUpgrade;
+	@Column(name = "status", nullable = false)
+	private StatusRichiestaUpgrade status;
 }
