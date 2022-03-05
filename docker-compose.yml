@@ -1,0 +1,26 @@
+version: '3'
+services:
+  dbpostgresql:
+    image: "postgres"
+    ports:
+      - "5434"
+    environment:
+      POSTGRES_DB: creative-hub-users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      restart: unless-stopped
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1080:80"
+  users-microservice:
+    build: src
+    image: users-microservice
+    container_name: users-microservice
+    ports:
+      - "8080:8080"
+    depends_on:
+      - dbpostgresql
+      - maildev
+
+
