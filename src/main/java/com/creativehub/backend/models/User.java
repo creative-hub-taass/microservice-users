@@ -5,18 +5,19 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
 @ToString
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", nullable = false)
@@ -54,6 +55,12 @@ public class User {
 	@ManyToMany(mappedBy = "inspirers")
 	private Set<User> fans = new LinkedHashSet<>();
 
+	@Column(name = "locked", nullable = false)
+	private Boolean locked = false;
+
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled = false;
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -65,5 +72,31 @@ public class User {
 	@Override
 	public int hashCode() {
 		return getClass().hashCode();
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
+		return Collections.singletonList(authority);
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return false; //TODO
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return !locked;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return false; //TODO
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 }
