@@ -2,7 +2,7 @@ package com.creativehub.backend.controllers;
 
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.UserDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -12,18 +12,13 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@AllArgsConstructor
 public class UserController {
-	@Autowired
-	private UserManager userManager;
+	private final UserManager userManager;
 
 	@GetMapping("/")
 	public List<UserDto> getAllUsers() {
 		return userManager.findAll();
-	}
-
-	@PostMapping("/create")
-	public UserDto createUser(@RequestBody UserDto user) {
-		return userManager.save(user);
 	}
 
 	@GetMapping("/{id}")

@@ -65,8 +65,6 @@ public class UserManagerImpl implements UserManager {
 		boolean userExists = userRepository.findByEmail(user.getEmail()).isPresent();
 
 		if (userExists) {
-			// TODO check of attributes are the same and
-			// TODO if email not confirmed send confirmation email.
 			throw new IllegalStateException("email already taken");
 		}
 
@@ -82,8 +80,6 @@ public class UserManagerImpl implements UserManager {
 		confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(20));
 		confirmationToken.setUser(user);
 		confirmationTokenService.saveConfirmationToken(confirmationToken);
-
-		//TODO: SEND EMAIL
 		return token;
 	}
 
