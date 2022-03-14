@@ -7,59 +7,61 @@ import com.creativehub.backend.services.EmailSender;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.RegistrationRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class RegistrationService {
-
 	private final UserManager userManager;
 	private final EmailValidator emailValidator;
 	private final ConfirmationTokenService confirmationTokenService;
 	private final EmailSender emailSender;
 
-	public String register(RegistrationRequest request) {
+	public ResponseEntity<String> register(RegistrationRequest request) {
 		boolean isValidEmail = emailValidator.test(request.getEmail());
-
 		if (!isValidEmail) {
-			throw new IllegalStateException("email not valid");
+			return ResponseEntity.badRequest().body("Invalid email");
 		}
-
 		User user = new User();
 		user.setNickname(request.getNickname());
 		user.setEmail(request.getEmail());
 		user.setPassword(request.getPassword());
 		user.setRole(Role.USER);
-
-		String token = userManager.signUpUser(user);
-
-		String link = "http://localhost:8080/api/v1/registration/confirm?token=" + token;
-		emailSender.send(
-				request.getEmail(),
-				buildEmail(request.getNickname(), link)
-		);
-		return token;
+		String token = UUID.randomUUID().toString();
+		ConfirmationToken confirmationToken = new ConfirmationToken();
+		confirmationToken.setToken(token);
+		confirmationToken.setCreatedAt(LocalDateTime.now());
+		confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(20));
+		confirmationToken.setUser(user);
+		confirmationTokenService.saveConfirmationToken(confirmationToken);
+		try {
+			String link = "http://localhost:8080/api/v1/registration/confirm?token=" + token;
+			String emailBody = buildEmail(request.getNickname(), link);
+			emailSender.send(request.getEmail(), emailBody);
+			userManager.signUpUser(user);
+			return ResponseEntity.ok("Registration successful");
+		} catch (IllegalStateException exception) {
+			return ResponseEntity.badRequest().body(exception.getMessage());
+		}
 	}
 
 	@Transactional
 	public String confirmToken(String token) {
 		ConfirmationToken confirmationToken = confirmationTokenService
 				.getToken(token)
-				.orElseThrow(() -> new IllegalStateException("token not found"));
-
+				.orElseThrow(() -> new IllegalStateException("Token not found"));
 		if (confirmationToken.getConfirmedAt() != null) {
 			throw new IllegalStateException("email already confirmed");
 		}
-
 		LocalDateTime expiredAt = confirmationToken.getExpiresAt();
-
 		if (expiredAt.isBefore(LocalDateTime.now())) {
-			throw new IllegalStateException("token expired");
+			throw new IllegalStateException("Token expired");
 		}
-
 		confirmationTokenService.setConfirmedAt(token);
 		userManager.enableUser(confirmationToken.getUser().getId());
 		return "confirmed"; //implementare messaggio di conferma

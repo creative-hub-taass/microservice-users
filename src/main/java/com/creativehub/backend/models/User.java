@@ -77,12 +77,12 @@ public class User implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
-		return Collections.singletonList(authority);
+		return List.of(authority);
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return false; //TODO
+		return true;
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class User implements UserDetails {
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false; //TODO
+		return true;
 	}
 
 	@Override
