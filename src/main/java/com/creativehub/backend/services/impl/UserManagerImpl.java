@@ -1,8 +1,8 @@
 package com.creativehub.backend.services.impl;
 
-import com.creativehub.backend.models.ConfirmationToken;
 import com.creativehub.backend.models.User;
 import com.creativehub.backend.repositories.UserRepository;
+import com.creativehub.backend.services.ConfirmationTokenService;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.UserMapper;
@@ -12,16 +12,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class UserManagerImpl implements UserManager {
-	private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
+	private final static String USER_NOT_FOUND_MSG = "User with email %s not found";
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -29,10 +27,6 @@ public class UserManagerImpl implements UserManager {
 
 	public List<UserDto> findAll() {
 		return userRepository.findAll().stream().map(userMapper::userToUserDto).collect(Collectors.toList());
-	}
-
-	public UserDto save(UserDto user) {
-		return userMapper.userToUserDto(userRepository.save(userMapper.userDtoToUser(user)));
 	}
 
 	@Override
@@ -61,37 +55,23 @@ public class UserManagerImpl implements UserManager {
 		});
 	}
 
-	public String signUpUser(User user) {
+	public UserDto signUpUser(User user) throws IllegalStateException {
 		boolean userExists = userRepository.findByEmail(user.getEmail()).isPresent();
-
 		if (userExists) {
-			throw new IllegalStateException("email already taken");
+			throw new IllegalStateException("Email already taken");
 		}
-
 		String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 		user.setPassword(encodedPassword);
-		userRepository.save(user);
-
-		String token = UUID.randomUUID().toString();
-
-		ConfirmationToken confirmationToken = new ConfirmationToken();
-		confirmationToken.setToken(token);
-		confirmationToken.setCreatedAt(LocalDateTime.now());
-		confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(20));
-		confirmationToken.setUser(user);
-		confirmationTokenService.saveConfirmationToken(confirmationToken);
-		return token;
+		return userMapper.userToUserDto(userRepository.save(user));
 	}
 
-	public int enableUser(long id) {
-		return userRepository.enableUser(id);
+	public void enableUser(long id) {
+		userRepository.enableUser(id);
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return userRepository.findByEmail(username)
-				.orElseThrow(() ->
-						new UsernameNotFoundException(
-								String.format(USER_NOT_FOUND_MSG, username)));
+		return userRepository.findByEmail(username).orElseThrow(() ->
+				new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
 	}
 }

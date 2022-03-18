@@ -19,7 +19,8 @@ import java.util.*;
 @Table(name = "users")
 public class User implements UserDetails {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence")
+	@SequenceGenerator(name = "user_id_sequence", initialValue = 100)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
@@ -77,12 +78,12 @@ public class User implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
-		return Collections.singletonList(authority);
+		return List.of(authority);
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return false; //TODO
+		return true;
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public class User implements UserDetails {
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false; //TODO
+		return true;
 	}
 
 	@Override

@@ -3,69 +3,73 @@ package com.creativehub.backend.services.impl;
 import com.creativehub.backend.models.ConfirmationToken;
 import com.creativehub.backend.models.User;
 import com.creativehub.backend.models.enums.Role;
-import com.creativehub.backend.services.EmailSender;
+import com.creativehub.backend.services.ConfirmationTokenService;
+import com.creativehub.backend.services.EmailService;
+import com.creativehub.backend.services.RegistrationService;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.RegistrationRequest;
+import com.creativehub.backend.util.EmailValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class RegistrationService {
-
+public class RegistrationServiceImpl implements RegistrationService {
+	//language=HTML
+	private static final String EMAIL_CONFIRMED = "<html lang='en'><head><title>creativeHub</title></head><body><h2>creativeHub</h2><p>Email confirmed. You can close this page.</p></body></html>";
 	private final UserManager userManager;
-	private final EmailValidator emailValidator;
 	private final ConfirmationTokenService confirmationTokenService;
-	private final EmailSender emailSender;
+	private final EmailService emailService;
 
-	public String register(RegistrationRequest request) {
-		boolean isValidEmail = emailValidator.test(request.getEmail());
-
+	@Override
+	public String register(RegistrationRequest request) throws IllegalStateException {
+		boolean isValidEmail = EmailValidator.test(request.getEmail());
 		if (!isValidEmail) {
-			throw new IllegalStateException("email not valid");
+			throw new IllegalStateException("Invalid email");
 		}
-
 		User user = new User();
+		user.setUsername(UUID.randomUUID().toString());
 		user.setNickname(request.getNickname());
 		user.setEmail(request.getEmail());
 		user.setPassword(request.getPassword());
 		user.setRole(Role.USER);
-
-		String token = userManager.signUpUser(user);
-
-		String link = "http://localhost:8080/api/v1/registration/confirm?token=" + token;
-		emailSender.send(
-				request.getEmail(),
-				buildEmail(request.getNickname(), link)
-		);
-		return token;
+		String token = UUID.randomUUID().toString();
+		ConfirmationToken confirmationToken = new ConfirmationToken();
+		confirmationToken.setToken(token);
+		confirmationToken.setCreatedAt(LocalDateTime.now());
+		confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(20));
+		confirmationToken.setUser(user);
+		String link = "http://localhost:8080/api/v1/access/confirm?token=" + token;
+		String emailBody = buildEmail(request.getNickname(), link);
+		userManager.signUpUser(user);
+		confirmationTokenService.saveConfirmationToken(confirmationToken);
+		emailService.send(request.getEmail(), emailBody);
+		return "Registration successful";
 	}
 
+	@Override
 	@Transactional
-	public String confirmToken(String token) {
-		ConfirmationToken confirmationToken = confirmationTokenService
-				.getToken(token)
-				.orElseThrow(() -> new IllegalStateException("token not found"));
-
+	public String confirmToken(String token) throws IllegalStateException {
+		ConfirmationToken confirmationToken = confirmationTokenService.getToken(token)
+				.orElseThrow(() -> new IllegalStateException("Token not found"));
 		if (confirmationToken.getConfirmedAt() != null) {
-			throw new IllegalStateException("email already confirmed");
+			throw new IllegalStateException("Email already confirmed");
 		}
-
 		LocalDateTime expiredAt = confirmationToken.getExpiresAt();
-
 		if (expiredAt.isBefore(LocalDateTime.now())) {
-			throw new IllegalStateException("token expired");
+			throw new IllegalStateException("Token expired");
 		}
-
 		confirmationTokenService.setConfirmedAt(token);
 		userManager.enableUser(confirmationToken.getUser().getId());
-		return "confirmed"; //implementare messaggio di conferma
+		return EMAIL_CONFIRMED;
 	}
 
 	private String buildEmail(String name, String link) {
+		//language=HTML
 		return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
 				"\n" +
 				"<span style=\"display:none;font-size:1px;color:#fff;max-height:0\"></span>\n" +

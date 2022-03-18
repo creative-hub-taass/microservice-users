@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface UserManager extends UserDetailsService {
 	List<UserDto> findAll();
 
-	UserDto save(UserDto user);
-
 	Optional<UserDto> findById(long id);
 
 	boolean existsById(long id);
@@ -20,7 +18,7 @@ public interface UserManager extends UserDetailsService {
 
 	Optional<UserDto> updateUser(long id, UserDto update);
 
-	String signUpUser(User user);
+	UserDto signUpUser(User user) throws IllegalStateException;
 
-	int enableUser(long id);
+	void enableUser(long id);
 }

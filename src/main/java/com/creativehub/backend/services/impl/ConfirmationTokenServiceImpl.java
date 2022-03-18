@@ -2,6 +2,7 @@ package com.creativehub.backend.services.impl;
 
 import com.creativehub.backend.models.ConfirmationToken;
 import com.creativehub.backend.repositories.ConfirmationTokenRepository;
+import com.creativehub.backend.services.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,19 +11,21 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class ConfirmationTokenService {
-
+public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
 	private final ConfirmationTokenRepository confirmationTokenRepository;
 
+	@Override
 	public void saveConfirmationToken(ConfirmationToken token) {
 		confirmationTokenRepository.save(token);
 	}
 
+	@Override
 	public Optional<ConfirmationToken> getToken(String token) {
 		return confirmationTokenRepository.findByToken(token);
 	}
 
-	public int setConfirmedAt(String token) {
-		return confirmationTokenRepository.updateConfirmedAt(token, LocalDateTime.now());
+	@Override
+	public void setConfirmedAt(String token) {
+		confirmationTokenRepository.updateConfirmedAt(token, LocalDateTime.now());
 	}
 }

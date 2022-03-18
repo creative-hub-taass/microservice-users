@@ -12,7 +12,7 @@ import java.util.Date;
 @Setter
 @ToString
 @Entity
-@Table(name = "RichiesteUpgrade")
+@Table(name = "richieste_upgrade")
 public class RichiestaUpgrade {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

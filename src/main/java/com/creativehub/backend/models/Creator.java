@@ -17,7 +17,8 @@ import java.util.Objects;
 @Table(name = "creator")
 public class Creator {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "creator_id_sequence")
+	@SequenceGenerator(name = "creator_id_sequence", initialValue = 100)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
@@ -30,14 +31,14 @@ public class Creator {
 	@Column(name = "birth_date", nullable = false)
 	private Date birthDate;
 
-	@Column(name = "bio", nullable = false, columnDefinition="TEXT")
+	@Column(name = "bio", nullable = false, columnDefinition = "TEXT")
 	private String bio;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "creator_type", nullable = false)
 	private CreatorType creatorType;
 
-	@Column(name = "avatar", nullable = false, columnDefinition="TEXT")
+	@Column(name = "avatar", nullable = false, columnDefinition = "TEXT")
 	private String avatar;
 
 	@Override
