@@ -5,13 +5,15 @@ import com.creativehub.backend.services.LoginService;
 import com.creativehub.backend.services.dto.LoginRequest;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.UserMapper;
+import com.creativehub.backend.util.AuthenticationToken;
 import com.creativehub.backend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -30,28 +32,26 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public ResponseEntity<String> refresh(String token) {
-		if (JwtUtil.checkToken(token)) {
-			String accessToken = JwtUtil.createAccessToken("user", List.of("user")); // FIXME
+		AuthenticationToken authenticationToken = JwtUtil.parseToken(token);
+		if (authenticationToken != null) {
+			String accessToken = JwtUtil.createAccessToken(authenticationToken.getPrincipal(), authenticationToken.getRoles());
 			return ResponseEntity.ok(accessToken);
-		} else return ResponseEntity.badRequest().build();
+		} else return ResponseEntity.badRequest().body("Invalid refresh token");
 	}
 
 	@Override
-	public ResponseEntity<UserDto> login(LoginRequest request) {
-		try {
-			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-			Authentication authentication = authenticationManager.authenticate(authenticationToken);
-			User user = (User) authentication.getPrincipal();
-			List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-			String accessToken = JwtUtil.createAccessToken(user.getUsername(), roles);
-			String refreshToken = JwtUtil.createRefreshToken(user.getUsername());
+	public Pair<UserDto, HttpHeaders> login(LoginRequest request) throws AuthenticationException {
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+		Authentication authentication = authenticationManager.authenticate(authenticationToken);
+		User user = (User) authentication.getPrincipal();
+		List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+		String accessToken = JwtUtil.createAccessToken(user.getUsername(), roles);
+		String refreshToken = JwtUtil.createRefreshToken(user.getUsername(), roles);
+		if (accessToken != null && refreshToken != null) {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("X-ACCESS-TOKEN", accessToken);
 			headers.add("X-REFRESH-TOKEN", refreshToken);
-			return ResponseEntity.ok().headers(headers).body(userMapper.userToUserDto(user));
-		} catch (AuthenticationException e) {
-			log.debug("Authentication exception: ", e);
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
+			return Pair.of(userMapper.userToUserDto(user), headers);
+		} else throw new AuthenticationServiceException("Cannot create JWT tokens");
 	}
 }

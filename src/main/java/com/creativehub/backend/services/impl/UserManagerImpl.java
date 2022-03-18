@@ -2,6 +2,7 @@ package com.creativehub.backend.services.impl;
 
 import com.creativehub.backend.models.User;
 import com.creativehub.backend.repositories.UserRepository;
+import com.creativehub.backend.services.ConfirmationTokenService;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.UserMapper;

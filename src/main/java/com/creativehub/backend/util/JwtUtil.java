@@ -28,36 +28,34 @@ public abstract class JwtUtil {
 	private static final Duration expireRefreshToken = Duration.ofDays(7);
 	private static final String SECRET = "7638792F423F4528472B4B6250655368566D597133743677397A24432646294A";
 
-	public static String createAccessToken(String username, List<String> roles) {
+	private static String createJWT(String email, List<String> roles, Duration expireToken) throws JOSEException {
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+				.subject(email)
+				.claim("roles", roles)
+				.expirationTime(Date.from(Instant.now().plus(expireToken)))
+				.issueTime(new Date())
+				.build();
+		Payload payload = new Payload(claims.toJSONObject());
+		JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256), payload);
+		jwsObject.sign(new MACSigner(SECRET));
+		return jwsObject.serialize();
+	}
+
+	public static String createAccessToken(String email, List<String> roles) {
 		try {
-			JWTClaimsSet claims = new JWTClaimsSet.Builder()
-					.subject(username)
-					.claim("roles", roles)
-					.expirationTime(Date.from(Instant.now().plus(expireToken)))
-					.issueTime(new Date())
-					.build();
-			Payload payload = new Payload(claims.toJSONObject());
-			JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256), payload);
-			jwsObject.sign(new MACSigner(SECRET));
-			return jwsObject.serialize();
+			return createJWT(email, roles, expireToken);
 		} catch (JOSEException e) {
-			throw new RuntimeException("Error creating JWT", e);
+			log.debug("Error creating JWT", e);
+			return null;
 		}
 	}
 
-	public static String createRefreshToken(String username) {
+	public static String createRefreshToken(String email, List<String> roles) {
 		try {
-			JWTClaimsSet claims = new JWTClaimsSet.Builder()
-					.subject(username)
-					.expirationTime(Date.from(Instant.now().plus(expireRefreshToken)))
-					.issueTime(new Date())
-					.build();
-			Payload payload = new Payload(claims.toJSONObject());
-			JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256), payload);
-			jwsObject.sign(new MACSigner(SECRET));
-			return jwsObject.serialize();
+			return createJWT(email, roles, expireRefreshToken);
 		} catch (JOSEException e) {
-			throw new RuntimeException("Error creating refresh JWT", e);
+			log.debug("Error creating refresh JWT", e);
+			return null;
 		}
 	}
 
@@ -72,13 +70,13 @@ public abstract class JwtUtil {
 				jwtProcessor.setJWSKeySelector(keySelector);
 				jwtProcessor.process(signedJWT, null);
 				JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-				String username = claims.getSubject();
+				String email = claims.getSubject();
 				List<String> roles = claims.getStringListClaim("roles");
 				var authorities = roles == null ? null : roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-				return new AuthenticationToken(username, null, authorities);
+				return new AuthenticationToken(email, null, authorities);
 			}
 		} catch (BadJOSEException | JOSEException | ParseException e) {
-			log.error(String.format("Error auth token: %s", token), e);
+			log.debug("Error auth token: " + token, e);
 		}
 		return null;
 	}
@@ -89,7 +87,7 @@ public abstract class JwtUtil {
 			SignedJWT signedJWT = SignedJWT.parse(token);
 			return signedJWT.verify(new MACVerifier(secretKey));
 		} catch (JOSEException | ParseException e) {
-			log.error(String.format("Error auth token: %s", token), e);
+			log.debug("Error auth token: " + token, e);
 		}
 		return false;
 	}

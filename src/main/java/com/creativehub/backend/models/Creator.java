@@ -31,14 +31,14 @@ public class Creator {
 	@Column(name = "birth_date", nullable = false)
 	private Date birthDate;
 
-	@Column(name = "bio", nullable = false, columnDefinition="TEXT")
+	@Column(name = "bio", nullable = false, columnDefinition = "TEXT")
 	private String bio;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "creator_type", nullable = false)
 	private CreatorType creatorType;
 
-	@Column(name = "avatar", nullable = false, columnDefinition="TEXT")
+	@Column(name = "avatar", nullable = false, columnDefinition = "TEXT")
 	private String avatar;
 
 	@Override

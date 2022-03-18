@@ -1,5 +1,5 @@
 package com.creativehub.backend.services;
 
-public interface EmailSender {
+public interface EmailService {
 	void send(String to, String email) throws IllegalStateException;
 }

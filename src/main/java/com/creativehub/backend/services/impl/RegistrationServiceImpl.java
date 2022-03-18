@@ -3,9 +3,12 @@ package com.creativehub.backend.services.impl;
 import com.creativehub.backend.models.ConfirmationToken;
 import com.creativehub.backend.models.User;
 import com.creativehub.backend.models.enums.Role;
-import com.creativehub.backend.services.EmailSender;
+import com.creativehub.backend.services.ConfirmationTokenService;
+import com.creativehub.backend.services.EmailService;
+import com.creativehub.backend.services.RegistrationService;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.RegistrationRequest;
+import com.creativehub.backend.util.EmailValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +18,16 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class RegistrationService {
+public class RegistrationServiceImpl implements RegistrationService {
 	//language=HTML
 	private static final String EMAIL_CONFIRMED = "<html lang='en'><head><title>creativeHub</title></head><body><h2>creativeHub</h2><p>Email confirmed. You can close this page.</p></body></html>";
 	private final UserManager userManager;
-	private final EmailValidator emailValidator;
 	private final ConfirmationTokenService confirmationTokenService;
-	private final EmailSender emailSender;
+	private final EmailService emailService;
 
+	@Override
 	public String register(RegistrationRequest request) throws IllegalStateException {
-		boolean isValidEmail = emailValidator.test(request.getEmail());
+		boolean isValidEmail = EmailValidator.test(request.getEmail());
 		if (!isValidEmail) {
 			throw new IllegalStateException("Invalid email");
 		}
@@ -44,10 +47,11 @@ public class RegistrationService {
 		String emailBody = buildEmail(request.getNickname(), link);
 		userManager.signUpUser(user);
 		confirmationTokenService.saveConfirmationToken(confirmationToken);
-		emailSender.send(request.getEmail(), emailBody);
+		emailService.send(request.getEmail(), emailBody);
 		return "Registration successful";
 	}
 
+	@Override
 	@Transactional
 	public String confirmToken(String token) throws IllegalStateException {
 		ConfirmationToken confirmationToken = confirmationTokenService.getToken(token)
