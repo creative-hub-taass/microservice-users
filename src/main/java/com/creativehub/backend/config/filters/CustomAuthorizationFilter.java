@@ -1,5 +1,6 @@
 package com.creativehub.backend.config.filters;
 
+import com.creativehub.backend.controllers.RegistrationLoginController;
 import com.creativehub.backend.util.AuthenticationToken;
 import com.creativehub.backend.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -21,7 +23,9 @@ import java.util.Map;
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		if (request.getServletPath().startsWith("/access")) {
+		String accessPath = RegistrationLoginController.class.getAnnotation(RequestMapping.class).path()[0];
+		String servletPath = request.getServletPath();
+		if (servletPath.startsWith(accessPath)) {
 			filterChain.doFilter(request, response);
 		} else {
 			String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -31,14 +35,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 				if (authenticationToken != null) {
 					SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 					filterChain.doFilter(request, response);
-				} else {
-					response.setStatus(HttpStatus.FORBIDDEN.value());
-					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-					new ObjectMapper().writeValue(response.getOutputStream(), Map.of("error", "Invalid authorization token"));
+					return;
 				}
-			} else {
-				filterChain.doFilter(request, response);
 			}
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+			new ObjectMapper().writeValue(response.getOutputStream(), Map.of("error", "Invalid authorization token"));
 		}
 	}
 }

@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "api/v1/access")
+@RequestMapping(path = "/api/v1/access")
 @AllArgsConstructor
 public class RegistrationLoginController {
 	private final RegistrationService registrationService;
@@ -26,13 +26,21 @@ public class RegistrationLoginController {
 		return loginService.refresh(token);
 	}
 
-	@PostMapping(path = "/registration")
+	@PostMapping(path = "/register")
 	public ResponseEntity<String> register(@RequestBody RegistrationRequest request) {
-		return registrationService.register(request);
+		try {
+			return ResponseEntity.ok(registrationService.register(request));
+		} catch (IllegalStateException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
-    @GetMapping(path = "/confirm")
-    public String confirm(@RequestParam("token") String token) {
-        return registrationService.confirmToken(token);
-    }
+	@GetMapping(path = "/confirm")
+	public ResponseEntity<String> confirm(@RequestParam("token") String token) {
+		try {
+			return ResponseEntity.ok(registrationService.confirmToken(token));
+		} catch (IllegalStateException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
 }

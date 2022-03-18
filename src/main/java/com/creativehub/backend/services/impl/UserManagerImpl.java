@@ -57,7 +57,7 @@ public class UserManagerImpl implements UserManager {
 	public UserDto signUpUser(User user) throws IllegalStateException {
 		boolean userExists = userRepository.findByEmail(user.getEmail()).isPresent();
 		if (userExists) {
-			throw new IllegalStateException("email already taken");
+			throw new IllegalStateException("Email already taken");
 		}
 		String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 		user.setPassword(encodedPassword);

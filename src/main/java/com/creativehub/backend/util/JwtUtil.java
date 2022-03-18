@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public abstract class JwtUtil {
 	private static final Duration expireToken = Duration.ofMinutes(10);
 	private static final Duration expireRefreshToken = Duration.ofDays(7);
-	private static final String SECRET = System.getProperty("jwt.secret");
+	private static final String SECRET = "7638792F423F4528472B4B6250655368566D597133743677397A24432646294A";
 
 	public static String createAccessToken(String username, List<String> roles) {
 		try {

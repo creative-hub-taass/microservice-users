@@ -17,7 +17,8 @@ import java.util.Objects;
 @Table(name = "creator")
 public class Creator {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "creator_id_sequence")
+	@SequenceGenerator(name = "creator_id_sequence", initialValue = 100)
 	@Column(name = "id", nullable = false)
 	private Long id;
 

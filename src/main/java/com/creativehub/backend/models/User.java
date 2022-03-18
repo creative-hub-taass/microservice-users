@@ -19,7 +19,8 @@ import java.util.*;
 @Table(name = "users")
 public class User implements UserDetails {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence")
+	@SequenceGenerator(name = "user_id_sequence", initialValue = 100)
 	@Column(name = "id", nullable = false)
 	private Long id;
 

@@ -33,7 +33,7 @@ public class LoginServiceImpl implements LoginService {
 		if (JwtUtil.checkToken(token)) {
 			String accessToken = JwtUtil.createAccessToken("user", List.of("user")); // FIXME
 			return ResponseEntity.ok(accessToken);
-		} else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		} else return ResponseEntity.badRequest().build();
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class LoginServiceImpl implements LoginService {
 			return ResponseEntity.ok().headers(headers).body(userMapper.userToUserDto(user));
 		} catch (AuthenticationException e) {
 			log.debug("Authentication exception: ", e);
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 	}
 }
