@@ -43,4 +43,5 @@ spec:
   ports:
     - port: 8080 # Port inside the cluster
       targetPort: 8080 #Il servizio ascolta per le richieste nella porta 8080 e direziona il traffico nella porta 8080 dei Pods target
+      nodePort: 30001
   type: LoadBalancer #Il type LoadBalancer espone i Pods accessibili da fuori al cluster

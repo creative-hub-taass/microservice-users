@@ -25,6 +25,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final ConfirmationTokenService confirmationTokenService;
 	private final EmailService emailService;
 
+	private final String url = "192.168.49.2";
+	private final String port = "30001";
+
 	@Override
 	public String register(RegistrationRequest request) throws IllegalStateException {
 		boolean isValidEmail = EmailValidator.test(request.getEmail());
@@ -43,7 +46,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		confirmationToken.setCreatedAt(LocalDateTime.now());
 		confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(20));
 		confirmationToken.setUser(user);
-		String link = "http://localhost:8080/api/v1/access/confirm?token=" + token;
+		String link = "http://"+url+":"+port+"/api/v1/access/confirm?token=" + token;
 		String emailBody = buildEmail(request.getNickname(), link);
 		userManager.signUpUser(user);
 		confirmationTokenService.saveConfirmationToken(confirmationToken);
