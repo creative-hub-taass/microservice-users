@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: microservice-users
-          image: zathsl/microservice-users
+          image: ghcr.io/creative-hub-taass/microservice-users
           ports:
             - containerPort: 8080
           env: # Setting Environmental Variables
