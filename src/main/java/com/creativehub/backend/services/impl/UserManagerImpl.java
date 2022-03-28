@@ -74,4 +74,10 @@ public class UserManagerImpl implements UserManager {
 		return userRepository.findByEmail(username).orElseThrow(() ->
 				new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
 	}
+
+	public UserDetails getUserByUsername(String username){
+		if(userRepository.findByEmail(username).isPresent()) return userRepository.findByEmail(username).get();
+			else return null;
+
+	}
 }

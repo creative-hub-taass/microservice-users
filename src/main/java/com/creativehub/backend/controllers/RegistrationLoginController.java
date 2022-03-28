@@ -30,6 +30,16 @@ public class RegistrationLoginController {
 		}
 	}
 
+	@PostMapping(path = "/loginsocial")
+	public ResponseEntity<?> loginSocial(@RequestBody RegistrationRequest request) {
+		try {
+			Pair<UserDto, HttpHeaders> pair = loginService.loginSocial(request);
+			return ResponseEntity.ok().headers(pair.getSecond()).body(pair.getFirst());
+		} catch (AuthenticationException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+		}
+	}
+
 	@PostMapping(path = "/refresh")
 	public ResponseEntity<String> refresh(@RequestBody String token) {
 		return loginService.refresh(token);
