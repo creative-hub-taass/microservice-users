@@ -1,6 +1,6 @@
 package com.creativehub.backend.models;
 
-import com.creativehub.backend.models.enums.StatusRichiestaUpgrade;
+import com.creativehub.backend.models.enums.UpgradeRequestStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,8 +12,8 @@ import java.util.Date;
 @Setter
 @ToString
 @Entity
-@Table(name = "richieste_upgrade")
-public class RichiestaUpgrade {
+@Table(name = "upgrade_requests")
+public class UpgradeRequest {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", nullable = false)
@@ -24,11 +24,11 @@ public class RichiestaUpgrade {
 	@JoinColumn(name = "userId", nullable = false)
 	private User user;
 
-	@Column(name = "nome")
-	private String nome;
+	@Column(name = "name")
+	private String name;
 
-	@Column(name = "cognome")
-	private String cognome;
+	@Column(name = "surname")
+	private String surname;
 
 	@Column(name = "bio")
 	private String bio;
@@ -36,14 +36,14 @@ public class RichiestaUpgrade {
 	@Column(name = "portfolio", columnDefinition = "TEXT")
 	private String portfolio;
 
-	@Column(name = "testoMotivazione")
-	private String testoMotivazione;
+	@Column(name = "motivationalText")
+	private String motivationalText;
 
-	@Column(name = "nomeArte")
-	private String nomeArte;
+	@Column(name = "artname")
+	private String artName;
 
-	@Column(name = "dataNascira")
-	private Date dataNascita;
+	@Column(name = "birthdate")
+	private Date birthDate;
 
 	@Column(name = "username")
 	private String username;
@@ -53,5 +53,5 @@ public class RichiestaUpgrade {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
-	private StatusRichiestaUpgrade status;
+	private UpgradeRequestStatus status;
 }
