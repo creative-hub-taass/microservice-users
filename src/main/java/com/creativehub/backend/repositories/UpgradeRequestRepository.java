@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 @Transactional(readOnly = true)
 public interface UpgradeRequestRepository extends JpaRepository<UpgradeRequest, Long> {
@@ -17,5 +19,8 @@ public interface UpgradeRequestRepository extends JpaRepository<UpgradeRequest, 
     void updateRequestStatus(Long id, UpgradeRequestStatus status);
 
     @Query("SELECT ur FROM UpgradeRequest ur WHERE ur.user.id = ?1")
-    <Optional>UpgradeRequest findByUserId(Long id);
+    List<UpgradeRequest> findByUserId(Long id);
+
+    @Query("SELECT ur FROM UpgradeRequest ur WHERE ur.user.id = ?1 AND ur.status = 'OPEN'")
+    List<UpgradeRequest> userPendingRequests(long id);
 }

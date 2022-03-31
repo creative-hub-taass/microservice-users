@@ -1,5 +1,6 @@
 package com.creativehub.backend.services.dto;
 
+import com.creativehub.backend.models.enums.CreatorType;
 import com.creativehub.backend.models.enums.UpgradeRequestStatus;
 import lombok.Data;
 
@@ -20,4 +21,5 @@ public class UpgradeRequestDto implements Serializable {
     private final String username;
     private final String avatar;
     private final UpgradeRequestStatus status;
+    private final CreatorType creatorType;
 }

@@ -1,11 +1,15 @@
 package com.creativehub.backend.services.impl;
 
+import com.creativehub.backend.models.Creator;
 import com.creativehub.backend.models.UpgradeRequest;
+import com.creativehub.backend.models.User;
 import com.creativehub.backend.models.enums.UpgradeRequestStatus;
 import com.creativehub.backend.repositories.UpgradeRequestRepository;
+import com.creativehub.backend.repositories.UserRepository;
 import com.creativehub.backend.services.UpgradeRequestManager;
 import com.creativehub.backend.services.dto.UpgradeRequestDto;
 import com.creativehub.backend.services.mapper.UpgradeRequestMapper;
+import com.creativehub.backend.util.UpgradeRequestException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +22,14 @@ import java.util.stream.Collectors;
 public class UpgradeRequestManagerImpl implements UpgradeRequestManager {
     private final UpgradeRequestRepository upgradeRequestRepository;
     private final UpgradeRequestMapper upgradeRequestMapper;
+    private final UserRepository userRepository;
 
-    public UpgradeRequestDto addRequest(UpgradeRequest ur) {
-        ur.setStatus(UpgradeRequestStatus.OPEN); //FIXME
-        return upgradeRequestMapper.upgradeRequestToUpgradeRequestDto(upgradeRequestRepository.save(ur));
+    public UpgradeRequestDto addRequest(UpgradeRequest ur) throws UpgradeRequestException {
+        // TODO: controllare che utente non sia già creator
+        if (!userHasPendingRequests(ur.getUser().getId())) {
+            ur.setStatus(UpgradeRequestStatus.OPEN);
+            return upgradeRequestMapper.upgradeRequestToUpgradeRequestDto(upgradeRequestRepository.save(ur));
+        } else throw new UpgradeRequestException("Request already submitted");
     }
 
     @Override
@@ -33,11 +41,9 @@ public class UpgradeRequestManagerImpl implements UpgradeRequestManager {
         return upgradeRequestRepository.existsById(id);
     }
 
-    // TODO
     @Override
-    public UpgradeRequestDto findByUserId(long id) {
-        return upgradeRequestMapper.upgradeRequestToUpgradeRequestDto(upgradeRequestRepository.findByUserId(id));
-        //return Optional.empty();
+    public List<UpgradeRequestDto> findByUserId(long id) {
+        return upgradeRequestRepository.findByUserId(id).stream().map(upgradeRequestMapper::upgradeRequestToUpgradeRequestDto).collect(Collectors.toList());
     }
 
     public List<UpgradeRequestDto> findAll() {
@@ -45,20 +51,40 @@ public class UpgradeRequestManagerImpl implements UpgradeRequestManager {
     }
 
     @Override
-    public void acceptRequest(long id) throws Exception {
+    public void acceptRequest(long id) throws UpgradeRequestException {
         if (existsById(id)) {
-            upgradeRequestRepository.updateRequestStatus(id, UpgradeRequestStatus.ACCEPTED);
-        } else {
-            throw new Exception("UPGRADE REQUEST NOT FOUND");
-        }
-        // TODO: controllare che ci sia la richiesta
-        // TODO: cambiare lo status della richiesta in accepted
-        // cambiare l'utente per farlo diventare creator e asscoiare i vari dettagli allegati alla richiesta
-
+            UpgradeRequest request = upgradeRequestRepository.getById(id);
+            if (request.getStatus().toString().equals("OPEN")) {
+                // TODO: controllare che l'utente non sia già creator
+                Creator creator = new Creator();
+                creator.setName(request.getName());
+                creator.setSurname(request.getSurname());
+                creator.setBirthDate(request.getBirthDate());
+                creator.setAvatar(request.getAvatar());
+                creator.setCreatorType(request.getCreatorType());
+                creator.setBio(request.getBio());
+                long userId = request.getUser().getId();
+                User user = userRepository.getById(userId);
+                user.setCreator(creator);
+                user.setUsername(request.getUsername());
+                user.setNickname(request.getArtName());
+                userRepository.save(user);
+                upgradeRequestRepository.updateRequestStatus(id, UpgradeRequestStatus.ACCEPTED);
+            } else { throw new UpgradeRequestException("Request already accepted/rejected.");}
+        } else {throw new UpgradeRequestException("Request not found");}
     }
 
     @Override
-    public void rejectRequest(long id) {
-        upgradeRequestRepository.updateRequestStatus(id, UpgradeRequestStatus.REJECTED);
+    public void rejectRequest(long id) throws UpgradeRequestException {
+        if (existsById(id)) {
+            UpgradeRequest request = upgradeRequestRepository.getById(id);
+            if ((request.getStatus().toString().equals("OPEN"))) {
+                upgradeRequestRepository.updateRequestStatus(id, UpgradeRequestStatus.REJECTED);
+            } else {throw  new UpgradeRequestException("Request already accepted/rejected");}
+        } else {throw new UpgradeRequestException("Request not found");}
+    }
+
+    public boolean userHasPendingRequests(long id) {
+        return !upgradeRequestRepository.userPendingRequests(id).isEmpty();
     }
 }

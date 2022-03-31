@@ -1,12 +1,13 @@
 package com.creativehub.backend.models;
 
+import com.creativehub.backend.models.enums.CreatorType;
 import com.creativehub.backend.models.enums.UpgradeRequestStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Date;
 
 @Getter
 @Setter
@@ -20,7 +21,7 @@ public class UpgradeRequest {
 	private Long id;
 
 	@ToString.Exclude
-	@OneToOne(optional = false)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "userId", nullable = false)
 	private User user;
 
@@ -54,4 +55,8 @@ public class UpgradeRequest {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private UpgradeRequestStatus status;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "creator_type", nullable = false)
+	private CreatorType creatorType;
 }
