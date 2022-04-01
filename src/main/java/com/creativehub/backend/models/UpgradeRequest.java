@@ -5,6 +5,8 @@ import com.creativehub.backend.models.enums.UpgradeRequestStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -22,6 +24,7 @@ public class UpgradeRequest {
 
 	@ToString.Exclude
 	@ManyToOne(optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "userId", nullable = false)
 	private User user;
 

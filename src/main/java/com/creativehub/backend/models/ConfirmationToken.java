@@ -3,6 +3,8 @@ package com.creativehub.backend.models;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -32,6 +34,7 @@ public class ConfirmationToken {
 	private LocalDateTime confirmedAt;
 
 	@ManyToOne(cascade = CascadeType.ALL)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(nullable = false, name = "user_id")
 	private User user;
 }

@@ -25,10 +25,14 @@ public class UpgradeRequestManagerImpl implements UpgradeRequestManager {
     private final UserRepository userRepository;
 
     public UpgradeRequestDto addRequest(UpgradeRequest ur) throws UpgradeRequestException {
-        // TODO: controllare che utente non sia già creator
         if (!userHasPendingRequests(ur.getUser().getId())) {
             ur.setStatus(UpgradeRequestStatus.OPEN);
-            return upgradeRequestMapper.upgradeRequestToUpgradeRequestDto(upgradeRequestRepository.save(ur));
+            long userId = ur.getUser().getId();
+            User user = userRepository.getById(userId);
+            Creator creator = user.getCreator();
+            if(creator == null) {
+                return upgradeRequestMapper.upgradeRequestToUpgradeRequestDto(upgradeRequestRepository.save(ur));
+            } else throw new UpgradeRequestException("User is already a creator");
         } else throw new UpgradeRequestException("Request already submitted");
     }
 
@@ -55,7 +59,6 @@ public class UpgradeRequestManagerImpl implements UpgradeRequestManager {
         if (existsById(id)) {
             UpgradeRequest request = upgradeRequestRepository.getById(id);
             if (request.getStatus().toString().equals("OPEN")) {
-                // TODO: controllare che l'utente non sia già creator
                 Creator creator = new Creator();
                 creator.setName(request.getName());
                 creator.setSurname(request.getSurname());
