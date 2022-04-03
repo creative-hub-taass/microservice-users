@@ -14,7 +14,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/v1/access")
+@RequestMapping(path = "/api/v1/auth/access")
 @AllArgsConstructor
 public class RegistrationLoginController {
 	private final RegistrationService registrationService;

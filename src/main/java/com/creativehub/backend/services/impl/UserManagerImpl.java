@@ -2,7 +2,6 @@ package com.creativehub.backend.services.impl;
 
 import com.creativehub.backend.models.User;
 import com.creativehub.backend.repositories.UserRepository;
-import com.creativehub.backend.services.ConfirmationTokenService;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.UserMapper;
@@ -23,7 +22,6 @@ public class UserManagerImpl implements UserManager {
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
-	private final ConfirmationTokenService confirmationTokenService;
 
 	public List<UserDto> findAll() {
 		return userRepository.findAll().stream().map(userMapper::userToUserDto).collect(Collectors.toList());
@@ -75,9 +73,21 @@ public class UserManagerImpl implements UserManager {
 				new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
 	}
 
-	public UserDetails getUserByUsername(String username){
-		if(userRepository.findByEmail(username).isPresent()) return userRepository.findByEmail(username).get();
+	public UserDetails getUserByEmail(String email){
+		if(userRepository.findByEmail(email).isPresent()) return userRepository.findByEmail(email).get();
 			else return null;
 
+	}
+
+	public long getId(String email){
+		if(userRepository.findByEmail(email).isPresent())
+			return userRepository.findByEmail(email).get().getId();
+		else
+			return -1;
+	}
+
+	public void changePassword(String email, String newPassword){
+		if(userRepository.findByEmail(email).isPresent())
+			userRepository.findByEmail(email).get().setPassword(newPassword);
 	}
 }
