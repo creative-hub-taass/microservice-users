@@ -11,7 +11,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/auth/users")
 @AllArgsConstructor
 public class UserController {
 	private final UserManager userManager;

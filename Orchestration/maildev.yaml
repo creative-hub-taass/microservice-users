@@ -38,6 +38,6 @@ spec:
     - name: http
       protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: 1080
       nodePort: 30003
   type: LoadBalancer

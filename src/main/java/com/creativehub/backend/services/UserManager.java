@@ -26,5 +26,9 @@ public interface UserManager extends UserDetailsService {
 
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
-	UserDetails getUserByUsername(String username);
+	UserDetails getUserByEmail(String email);
+
+	long getId(String email);
+
+	void changePassword(String email, String newPassword);
 }
