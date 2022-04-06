@@ -14,7 +14,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/v1/access")
+@RequestMapping(path = "/api/v1/auth/access")
 @AllArgsConstructor
 public class RegistrationLoginController {
 	private final RegistrationService registrationService;
@@ -24,6 +24,16 @@ public class RegistrationLoginController {
 	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 		try {
 			Pair<UserDto, HttpHeaders> pair = loginService.login(request);
+			return ResponseEntity.ok().headers(pair.getSecond()).body(pair.getFirst());
+		} catch (AuthenticationException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+		}
+	}
+
+	@PostMapping(path = "/loginsocial")
+	public ResponseEntity<?> loginSocial(@RequestBody RegistrationRequest request) {
+		try {
+			Pair<UserDto, HttpHeaders> pair = loginService.loginSocial(request);
 			return ResponseEntity.ok().headers(pair.getSecond()).body(pair.getFirst());
 		} catch (AuthenticationException e) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
