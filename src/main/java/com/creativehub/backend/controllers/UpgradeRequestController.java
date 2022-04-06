@@ -15,7 +15,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
-@RequestMapping("/api/v1/users/upgrade")
+@RequestMapping("/api/v1/auth/users/upgrade")
 @AllArgsConstructor
 public class UpgradeRequestController {
     // TODO: perché Impl e non Manager normale
