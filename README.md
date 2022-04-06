@@ -14,10 +14,10 @@ COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose up --build
 $env:COMPOSE_DOCKER_CLI_BUILD=1; $env:DOCKER_BUILDKIT=1; docker-compose up --build
 ```
 
+## Kubernetes
 
 
-#Kubernetes command
-
+```shell
 minikube start
 
 docker build -t microservice-users path/microservice-users
@@ -36,5 +36,4 @@ kubectl apply -f path/microservice-users/Orchestration
 
 #expose postgres
 postgres:5432
-
-
+```
