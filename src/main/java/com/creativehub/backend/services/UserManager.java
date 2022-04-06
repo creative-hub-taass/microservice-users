@@ -8,27 +8,28 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserManager extends UserDetailsService {
 	List<UserDto> findAll();
 
-	Optional<UserDto> findById(long id);
+	Optional<UserDto> findById(UUID id);
 
-	boolean existsById(long id);
+	boolean existsById(UUID id);
 
-	Optional<Boolean> deleteById(long id);
+	Optional<Boolean> deleteById(UUID id);
 
-	Optional<UserDto> updateUser(long id, UserDto update);
+	Optional<UserDto> updateUser(UUID id, UserDto update);
 
 	UserDto signUpUser(User user) throws IllegalStateException;
 
-	void enableUser(long id);
+	void enableUser(UUID id);
 
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
-	UserDetails getUserByEmail(String email);
+	Optional<User> getUserByEmail(String email);
 
-	long getId(String email);
+	Optional<UUID> getId(String email);
 
 	void changePassword(String email, String newPassword);
 }

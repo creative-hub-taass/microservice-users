@@ -9,18 +9,19 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 @Transactional(readOnly = true)
-public interface UpgradeRequestRepository extends JpaRepository<UpgradeRequest, Long> {
-    @Transactional
-    @Modifying
-    @Query("UPDATE UpgradeRequest ur SET ur.status = ?2 WHERE ur.id = ?1")
-    void updateRequestStatus(Long id, UpgradeRequestStatus status);
+public interface UpgradeRequestRepository extends JpaRepository<UpgradeRequest, UUID> {
+	@Transactional
+	@Modifying
+	@Query("UPDATE UpgradeRequest ur SET ur.status = ?2 WHERE ur.id = ?1")
+	void updateRequestStatus(UUID id, UpgradeRequestStatus status);
 
-    @Query("SELECT ur FROM UpgradeRequest ur WHERE ur.user.id = ?1")
-    List<UpgradeRequest> findByUserId(Long id);
+	@Query("SELECT ur FROM UpgradeRequest ur WHERE ur.user.id = ?1")
+	List<UpgradeRequest> findByUserId(UUID id);
 
-    @Query("SELECT ur FROM UpgradeRequest ur WHERE ur.user.id = ?1 AND ur.status = 'OPEN'")
-    List<UpgradeRequest> userPendingRequests(long id);
+	@Query("SELECT ur FROM UpgradeRequest ur WHERE ur.user.id = ?1 AND ur.status = 'OPEN'")
+	List<UpgradeRequest> userPendingRequests(UUID id);
 }

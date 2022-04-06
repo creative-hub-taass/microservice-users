@@ -13,6 +13,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.text.ParseException;
@@ -26,7 +27,8 @@ import java.util.stream.Collectors;
 public abstract class JwtUtil {
 	private static final Duration expireToken = Duration.ofMinutes(10);
 	private static final Duration expireRefreshToken = Duration.ofDays(7);
-	private static final String SECRET = "7638792F423F4528472B4B6250655368566D597133743677397A24432646294A";
+	@Value("${security.jwt.secret}")
+	private static String SECRET;
 
 	private static String createJWT(String email, List<String> roles, Duration expireToken) throws JOSEException {
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -79,16 +81,5 @@ public abstract class JwtUtil {
 			log.debug("Error auth token: " + token, e);
 		}
 		return null;
-	}
-
-	public static boolean checkToken(String token) {
-		try {
-			byte[] secretKey = SECRET.getBytes();
-			SignedJWT signedJWT = SignedJWT.parse(token);
-			return signedJWT.verify(new MACVerifier(secretKey));
-		} catch (JOSEException | ParseException e) {
-			log.debug("Error auth token: " + token, e);
-		}
-		return false;
 	}
 }

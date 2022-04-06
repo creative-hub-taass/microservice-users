@@ -29,6 +29,12 @@ spec:
               value: postgres
             - name: MAIL_HOST
               value: mail-server
+            - name: MAIL_PORT
+              value: mail-server
+            - name: API_GATEWAY_URL
+              value: localhost:30000
+            - name: JWT_SECRET
+              value: 7638792F423F4528472B4B6250655368566D597133743677397A24432646294A
 
 ---
 #Servizio simile a un load balancer.

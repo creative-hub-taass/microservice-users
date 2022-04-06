@@ -5,8 +5,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class RegistrationRequest implements Serializable {
+public class SocialLoginRequest implements Serializable {
 	private final String email;
-	private final String password;
 	private final String nickname;
+	private final String token;
 }

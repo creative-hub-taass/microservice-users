@@ -6,10 +6,10 @@ import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface UpgradeRequestMapper {
-    UpgradeRequest upgradeRequestDtoToUpgradeRequest(UpgradeRequestDto upgradeRequestDto);
+	UpgradeRequest upgradeRequestDtoToUpgradeRequest(UpgradeRequestDto upgradeRequestDto);
 
-    UpgradeRequestDto upgradeRequestToUpgradeRequestDto(UpgradeRequest upgradeRequest);
+	UpgradeRequestDto upgradeRequestToUpgradeRequestDto(UpgradeRequest upgradeRequest);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUpgradeRequestFromUpgradeRequestDto(UpgradeRequestDto upgradeRequestDto, @MappingTarget UpgradeRequest upgradeRequest);
+	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+	void updateUpgradeRequestFromUpgradeRequestDto(UpgradeRequestDto upgradeRequestDto, @MappingTarget UpgradeRequest upgradeRequest);
 }
