@@ -1,5 +1,5 @@
 package com.creativehub.backend.models.enums;
 
-public enum StatusRichiestaUpgrade {
+public enum UpgradeRequestStatus {
 	OPEN, ACCEPTED, REJECTED
 }
