@@ -28,32 +28,35 @@ public class UpgradeRequest {
 	@JoinColumn(name = "userId", nullable = false)
 	private User user;
 
-	@Column(name = "name")
+	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "surname")
+	@Column(name = "surname", nullable = false)
 	private String surname;
 
-	@Column(name = "bio")
+	@Column(name = "bio", nullable = false)
 	private String bio;
 
-	@Column(name = "portfolio", columnDefinition = "TEXT")
+	@Column(name = "portfolio", nullable = false, columnDefinition = "TEXT")
 	private String portfolio;
 
-	@Column(name = "motivationalText")
+	@Column(name = "motivationalText", nullable = false)
 	private String motivationalText;
 
-	@Column(name = "artname")
+	@Column(name = "artname", nullable = false)
 	private String artName;
 
-	@Column(name = "birthdate")
+	@Column(name = "birthdate", nullable = false)
 	private Date birthDate;
 
-	@Column(name = "username")
+	@Column(name = "username", nullable = false)
 	private String username;
 
-	@Column(name = "avatar", columnDefinition = "TEXT")
+	@Column(name = "avatar", nullable = false, columnDefinition = "TEXT")
 	private String avatar;
+
+	@Column(name = "payment_email", nullable = false)
+	private String paymentEmail;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)

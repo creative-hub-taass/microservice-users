@@ -20,6 +20,7 @@ public class UpgradeRequestDto implements Serializable {
     private final Date birthDate;
     private final String username;
     private final String avatar;
-    private final UpgradeRequestStatus status;
+	private final String paymentEmail;
+	private final UpgradeRequestStatus status;
     private final CreatorType creatorType;
 }

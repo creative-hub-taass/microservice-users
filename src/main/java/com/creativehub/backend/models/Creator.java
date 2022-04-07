@@ -41,6 +41,9 @@ public class Creator {
 	@Column(name = "avatar", nullable = false, columnDefinition = "TEXT")
 	private String avatar;
 
+	@Column(name = "payment_email", nullable = false)
+	private String paymentEmail;
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
