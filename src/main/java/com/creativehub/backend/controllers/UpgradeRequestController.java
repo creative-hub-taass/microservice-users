@@ -1,8 +1,8 @@
 package com.creativehub.backend.controllers;
 
 import com.creativehub.backend.models.UpgradeRequest;
+import com.creativehub.backend.services.UpgradeRequestManager;
 import com.creativehub.backend.services.dto.UpgradeRequestDto;
-import com.creativehub.backend.services.impl.UpgradeRequestManagerImpl;
 import com.creativehub.backend.util.UpgradeRequestException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,8 +20,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequestMapping("/api/v1/users/upgrade")
 @AllArgsConstructor
 public class UpgradeRequestController {
-	// TODO: perché Impl e non Manager normale
-	private final UpgradeRequestManagerImpl upgradeRequestManager;
+	private final UpgradeRequestManager upgradeRequestManager;
 
 	@PostMapping("/request")
 	public UpgradeRequestDto addUpgradeRequest(@RequestBody UpgradeRequest upgradeRequest) {

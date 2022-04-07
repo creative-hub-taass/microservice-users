@@ -25,6 +25,7 @@ public class UpgradeRequestManagerImpl implements UpgradeRequestManager {
 	private final UpgradeRequestMapper upgradeRequestMapper;
 	private final UserRepository userRepository;
 
+	@Override
 	public UpgradeRequestDto addRequest(UpgradeRequest ur) throws UpgradeRequestException {
 		if (!userHasPendingRequests(ur.getUser().getId())) {
 			ur.setStatus(UpgradeRequestStatus.OPEN);
@@ -51,6 +52,7 @@ public class UpgradeRequestManagerImpl implements UpgradeRequestManager {
 		return upgradeRequestRepository.findByUserId(id).stream().map(upgradeRequestMapper::upgradeRequestToUpgradeRequestDto).collect(Collectors.toList());
 	}
 
+	@Override
 	public List<UpgradeRequestDto> findAll() {
 		return upgradeRequestRepository.findAll().stream().map(upgradeRequestMapper::upgradeRequestToUpgradeRequestDto).collect(Collectors.toList());
 	}
