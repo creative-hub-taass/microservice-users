@@ -5,7 +5,7 @@ import com.creativehub.backend.repositories.UserRepository;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.UserMapper;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,10 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserManagerImpl implements UserManager {
 	private final static String USER_NOT_FOUND_MSG = "User with email %s not found";
 	private final UserRepository userRepository;
@@ -28,17 +29,17 @@ public class UserManagerImpl implements UserManager {
 	}
 
 	@Override
-	public Optional<UserDto> findById(long id) {
+	public Optional<UserDto> findById(UUID id) {
 		return userRepository.findById(id).map(userMapper::userToUserDto);
 	}
 
 	@Override
-	public boolean existsById(long id) {
+	public boolean existsById(UUID id) {
 		return userRepository.existsById(id);
 	}
 
 	@Override
-	public Optional<Boolean> deleteById(long id) {
+	public Optional<Boolean> deleteById(UUID id) {
 		if (userRepository.existsById(id)) {
 			userRepository.deleteById(id);
 			return Optional.of(true);
@@ -46,7 +47,7 @@ public class UserManagerImpl implements UserManager {
 	}
 
 	@Override
-	public Optional<UserDto> updateUser(long id, UserDto update) {
+	public Optional<UserDto> updateUser(UUID id, UserDto update) {
 		return userRepository.findById(id).map(user -> {
 			userMapper.updateUserFromUserDto(update, user);
 			return userMapper.userToUserDto(userRepository.save(user));
@@ -60,10 +61,13 @@ public class UserManagerImpl implements UserManager {
 		}
 		String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 		user.setPassword(encodedPassword);
+		user.setUsername(UUID.randomUUID().toString());
+		user = userRepository.save(user);
+		user.setUsername(user.getId().toString());
 		return userMapper.userToUserDto(userRepository.save(user));
 	}
 
-	public void enableUser(long id) {
+	public void enableUser(UUID id) {
 		userRepository.enableUser(id);
 	}
 
@@ -73,21 +77,16 @@ public class UserManagerImpl implements UserManager {
 				new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
 	}
 
-	public UserDetails getUserByEmail(String email){
-		if(userRepository.findByEmail(email).isPresent()) return userRepository.findByEmail(email).get();
-			else return null;
-
+	public Optional<User> getUserByEmail(String email) {
+		return userRepository.findByEmail(email);
 	}
 
-	public long getId(String email){
-		if(userRepository.findByEmail(email).isPresent())
-			return userRepository.findByEmail(email).get().getId();
-		else
-			return -1;
+	public Optional<UUID> getId(String email) {
+		return userRepository.findByEmail(email).map(User::getId);
 	}
 
-	public void changePassword(String email, String newPassword){
-		if(userRepository.findByEmail(email).isPresent())
+	public void changePassword(String email, String newPassword) {
+		if (userRepository.findByEmail(email).isPresent())
 			userRepository.findByEmail(email).get().setPassword(newPassword);
 	}
 }

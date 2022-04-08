@@ -11,16 +11,24 @@ services:
   mail-server:
     image: maildev/maildev
     ports:
-      - "1080:80"
+      - "1080:1080"
+    environment:
+      MAILDEV_SMTP_PORT: 1025
+      MAILDEV_WEB_PORT: 1080
   users-microservice:
     build: .
-    image: creative-hub/users-microservice:latest
+    image: ghcr.io/creative-hub-taass/microservice-users:latest
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-users:5432/creative-hub-users
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - DB_HOST=db-users
+      - DB_NAME=creative-hub-users
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - MAIL_HOST=mail-server
+      - MAIL_PORT=1025
+      - API_GATEWAY_URL=http://localhost:8080
+      - JWT_SECRET=7638792F423F4528472B4B6250655368566D597133743677397A24432646294A
     depends_on:
       - db-users
       - mail-server

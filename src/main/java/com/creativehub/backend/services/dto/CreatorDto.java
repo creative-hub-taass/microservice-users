@@ -5,10 +5,11 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.UUID;
 
 @Data
 public class CreatorDto implements Serializable {
-	private final Long id;
+	private final UUID id;
 	private final String name;
 	private final String surname;
 	private final Date birthDate;

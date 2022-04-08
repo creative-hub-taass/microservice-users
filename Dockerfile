@@ -4,7 +4,7 @@ WORKDIR /app
 USER root
 COPY pom.xml .
 COPY src ./src
-RUN --mount=type=cache,target=/root/.m2 mvn clean package -Dmaven.test.skip
+RUN --mount=type=cache,target=/root/.m2 mvn -B -Dmaven.test.skip clean package
 
 #
 # Package stage

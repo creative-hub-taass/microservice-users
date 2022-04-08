@@ -4,11 +4,10 @@ import com.creativehub.backend.models.enums.CreatorType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,10 +16,9 @@ import java.util.Objects;
 @Table(name = "creator")
 public class Creator {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "creator_id_sequence")
-	@SequenceGenerator(name = "creator_id_sequence", initialValue = 100)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", nullable = false)
-	private Long id;
+	private UUID id;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -43,17 +41,4 @@ public class Creator {
 
 	@Column(name = "payment_email", nullable = false)
 	private String paymentEmail;
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		Creator creator = (Creator) o;
-		return id != null && Objects.equals(id, creator.id);
-	}
-
-	@Override
-	public int hashCode() {
-		return getClass().hashCode();
-	}
 }

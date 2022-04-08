@@ -5,6 +5,7 @@ import com.creativehub.backend.services.dto.UserDto;
 import org.mapstruct.*;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
@@ -20,11 +21,11 @@ public interface UserMapper {
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void updateUserFromUserDto(UserDto userDto, @MappingTarget User user);
 
-	default Set<Long> inspirersToInspirerIds(Set<User> inspirers) {
+	default Set<UUID> inspirersToInspirerIds(Set<User> inspirers) {
 		return inspirers.stream().map(User::getId).collect(Collectors.toSet());
 	}
 
-	default Set<Long> fansToFanIds(Set<User> fans) {
+	default Set<UUID> fansToFanIds(Set<User> fans) {
 		return fans.stream().map(User::getId).collect(Collectors.toSet());
 	}
 }

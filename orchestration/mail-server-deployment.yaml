@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: mail-server
+  name: mail-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mail-server
+  strategy: { }
+  template:
+    metadata:
+      labels:
+        io.kompose.service: mail-server
+    spec:
+      containers:
+        - image: maildev/maildev
+          name: mail-server
+          ports:
+            - containerPort: 1080
+            - containerPort: 1025
+          env:
+            - name: MAILDEV_SMTP_PORT
+              value: "1025"
+            - name: MAILDEV_WEB_PORT
+              value: "1080"
+          resources: { }
+      restartPolicy: Always

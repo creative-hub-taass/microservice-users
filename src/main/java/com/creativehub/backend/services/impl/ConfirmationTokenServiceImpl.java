@@ -3,14 +3,14 @@ package com.creativehub.backend.services.impl;
 import com.creativehub.backend.models.ConfirmationToken;
 import com.creativehub.backend.repositories.ConfirmationTokenRepository;
 import com.creativehub.backend.services.ConfirmationTokenService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
 	private final ConfirmationTokenRepository confirmationTokenRepository;
 

@@ -4,8 +4,9 @@ import com.creativehub.backend.services.LoginService;
 import com.creativehub.backend.services.RegistrationService;
 import com.creativehub.backend.services.dto.LoginRequest;
 import com.creativehub.backend.services.dto.RegistrationRequest;
+import com.creativehub.backend.services.dto.SocialLoginRequest;
 import com.creativehub.backend.services.dto.UserDto;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
-@RequestMapping(path = "/api/v1/auth/access")
-@AllArgsConstructor
+@RequestMapping(path = "/api/v1/users/auth")
+@RequiredArgsConstructor
 public class RegistrationLoginController {
 	private final RegistrationService registrationService;
 	private final LoginService loginService;
@@ -31,7 +33,7 @@ public class RegistrationLoginController {
 	}
 
 	@PostMapping(path = "/loginsocial")
-	public ResponseEntity<?> loginSocial(@RequestBody RegistrationRequest request) {
+	public ResponseEntity<?> loginSocial(@RequestBody SocialLoginRequest request) {
 		try {
 			Pair<UserDto, HttpHeaders> pair = loginService.loginSocial(request);
 			return ResponseEntity.ok().headers(pair.getSecond()).body(pair.getFirst());

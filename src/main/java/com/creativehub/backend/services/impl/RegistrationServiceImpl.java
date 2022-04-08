@@ -9,7 +9,8 @@ import com.creativehub.backend.services.RegistrationService;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.RegistrationRequest;
 import com.creativehub.backend.util.EmailValidator;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,16 +18,15 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
 	//language=HTML
 	private static final String EMAIL_CONFIRMED = "<html lang='en'><head><title>creativeHub</title></head><body><h2>creativeHub</h2><p>Email confirmed. You can close this page.</p></body></html>";
 	private final UserManager userManager;
 	private final ConfirmationTokenService confirmationTokenService;
 	private final EmailService emailService;
-
-	private final String url = "192.168.49.2";
-	private final String port = "30001";
+	@Value("${gateway.url}")
+	private String gatewayUrl;
 
 	@Override
 	public String register(RegistrationRequest request) throws IllegalStateException {
@@ -35,7 +35,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new IllegalStateException("Invalid email");
 		}
 		User user = new User();
-		user.setUsername(UUID.randomUUID().toString());
 		user.setNickname(request.getNickname());
 		user.setEmail(request.getEmail());
 		user.setPassword(request.getPassword());
@@ -46,14 +45,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 		confirmationToken.setCreatedAt(LocalDateTime.now());
 		confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(20));
 		confirmationToken.setUser(user);
-		String link = "https://"+url+":"+port+"/api/v1/access/confirm?token=" + token;
+		String link = gatewayUrl + "/api/v1/users/auth/confirm?token=" + token;
 		String emailBody = buildEmail(request.getNickname(), link);
 		userManager.signUpUser(user);
 		confirmationTokenService.saveConfirmationToken(confirmationToken);
 		emailService.send(request.getEmail(), emailBody);
 		return "Registration successful";
 	}
-
 
 
 	@Override
