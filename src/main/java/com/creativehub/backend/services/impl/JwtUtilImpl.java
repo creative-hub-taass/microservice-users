@@ -17,6 +17,8 @@ import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class JwtUtilImpl implements JwtUtil {
 	private static final Duration expireToken = Duration.ofMinutes(10);
 	private static final Duration expireRefreshToken = Duration.ofDays(7);

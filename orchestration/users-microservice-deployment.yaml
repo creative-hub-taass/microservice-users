@@ -33,7 +33,7 @@ spec:
               value: mail-server
             - name: MAIL_PORT
               value: "1025"
-          image: ghcr.io/creative-hub-taass/microservice-users-test:latest
+          image: ghcr.io/creative-hub-taass/microservice-users:latest
           name: users-microservice
           ports:
             - containerPort: 8080
