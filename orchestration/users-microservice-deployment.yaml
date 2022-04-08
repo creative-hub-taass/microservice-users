@@ -18,7 +18,7 @@ spec:
       containers:
         - env:
             - name: API_GATEWAY_URL
-              value: localhost:8080
+              value: https://localhost:8080
             - name: DB_HOST
               value: db-users
             - name: DB_NAME
@@ -32,7 +32,7 @@ spec:
             - name: MAIL_HOST
               value: mail-server
             - name: MAIL_PORT
-              value: "25"
+              value: "1025"
           image: ghcr.io/creative-hub-taass/microservice-users-test:latest
           name: users-microservice
           ports:

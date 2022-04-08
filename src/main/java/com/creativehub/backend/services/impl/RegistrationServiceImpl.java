@@ -45,7 +45,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		confirmationToken.setCreatedAt(LocalDateTime.now());
 		confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(20));
 		confirmationToken.setUser(user);
-		String link = "https://" + gatewayUrl + "/api/v1/users/auth/confirm?token=" + token;
+		String link = gatewayUrl + "/api/v1/users/auth/confirm?token=" + token;
 		String emailBody = buildEmail(request.getNickname(), link);
 		userManager.signUpUser(user);
 		confirmationTokenService.saveConfirmationToken(confirmationToken);
