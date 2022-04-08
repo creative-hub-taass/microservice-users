@@ -85,11 +85,4 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		return enabled;
 	}
-
-	@PrePersist
-	public void prePersist() {
-		if (username == null) {
-			username = id.toString();
-		}
-	}
 }

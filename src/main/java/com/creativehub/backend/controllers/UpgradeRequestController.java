@@ -4,7 +4,7 @@ import com.creativehub.backend.models.UpgradeRequest;
 import com.creativehub.backend.services.UpgradeRequestManager;
 import com.creativehub.backend.services.dto.UpgradeRequestDto;
 import com.creativehub.backend.util.UpgradeRequestException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1/users/upgrade")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UpgradeRequestController {
 	private final UpgradeRequestManager upgradeRequestManager;
 

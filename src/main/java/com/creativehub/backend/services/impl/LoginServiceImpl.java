@@ -2,6 +2,7 @@ package com.creativehub.backend.services.impl;
 
 import com.creativehub.backend.models.User;
 import com.creativehub.backend.models.enums.Role;
+import com.creativehub.backend.services.JwtUtil;
 import com.creativehub.backend.services.LoginService;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.LoginRequest;
@@ -9,7 +10,6 @@ import com.creativehub.backend.services.dto.SocialLoginRequest;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.UserMapper;
 import com.creativehub.backend.util.AuthenticationToken;
-import com.creativehub.backend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -35,12 +35,13 @@ public class LoginServiceImpl implements LoginService {
 	private final AuthenticationManager authenticationManager;
 	private final UserMapper userMapper;
 	private final UserManager userManager;
+	private final JwtUtil jwtUtil;
 
 	@Override
 	public ResponseEntity<String> refresh(String token) {
-		AuthenticationToken authenticationToken = JwtUtil.parseToken(token);
+		AuthenticationToken authenticationToken = jwtUtil.parseToken(token);
 		if (authenticationToken != null) {
-			String accessToken = JwtUtil.createAccessToken(authenticationToken.getPrincipal(), authenticationToken.getRoles());
+			String accessToken = jwtUtil.createAccessToken(authenticationToken.getPrincipal(), authenticationToken.getRoles());
 			return ResponseEntity.ok(accessToken);
 		} else return ResponseEntity.badRequest().body("Invalid refresh token");
 	}
@@ -71,8 +72,8 @@ public class LoginServiceImpl implements LoginService {
 
 	private Pair<UserDto, HttpHeaders> getResponseData(User user) {
 		List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-		String accessToken = JwtUtil.createAccessToken(user.getUsername(), roles);
-		String refreshToken = JwtUtil.createRefreshToken(user.getUsername(), roles);
+		String accessToken = jwtUtil.createAccessToken(user.getUsername(), roles);
+		String refreshToken = jwtUtil.createRefreshToken(user.getUsername(), roles);
 		if (accessToken != null && refreshToken != null) {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("X-ACCESS-TOKEN", accessToken);

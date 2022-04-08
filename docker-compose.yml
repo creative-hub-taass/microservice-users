@@ -14,7 +14,7 @@ services:
       - "1080:80"
   users-microservice:
     build: .
-    image: creative-hub/users-microservice:latest
+    image: ghcr.io/creative-hub-taass/microservice-users-test:latest
     ports:
       - "8080:8080"
     environment:

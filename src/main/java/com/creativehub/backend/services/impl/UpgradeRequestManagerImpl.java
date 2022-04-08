@@ -10,7 +10,7 @@ import com.creativehub.backend.services.UpgradeRequestManager;
 import com.creativehub.backend.services.dto.UpgradeRequestDto;
 import com.creativehub.backend.services.mapper.UpgradeRequestMapper;
 import com.creativehub.backend.util.UpgradeRequestException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UpgradeRequestManagerImpl implements UpgradeRequestManager {
 	private final UpgradeRequestRepository upgradeRequestRepository;
 	private final UpgradeRequestMapper upgradeRequestMapper;

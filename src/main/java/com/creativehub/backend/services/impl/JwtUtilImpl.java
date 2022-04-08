@@ -1,5 +1,7 @@
-package com.creativehub.backend.util;
+package com.creativehub.backend.services.impl;
 
+import com.creativehub.backend.services.JwtUtil;
+import com.creativehub.backend.util.AuthenticationToken;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -12,9 +14,11 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.time.Duration;
@@ -24,13 +28,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class JwtUtil {
+@RequiredArgsConstructor
+@Service
+public class JwtUtilImpl implements JwtUtil {
 	private static final Duration expireToken = Duration.ofMinutes(10);
 	private static final Duration expireRefreshToken = Duration.ofDays(7);
 	@Value("${security.jwt.secret}")
-	private static String SECRET;
+	private String secret;
 
-	private static String createJWT(String email, List<String> roles, Duration expireToken) throws JOSEException {
+	@Override
+	public String createJWT(String email, List<String> roles, Duration expireToken) throws JOSEException {
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.subject(email)
 				.claim("roles", roles)
@@ -39,11 +46,12 @@ public abstract class JwtUtil {
 				.build();
 		Payload payload = new Payload(claims.toJSONObject());
 		JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256), payload);
-		jwsObject.sign(new MACSigner(SECRET));
+		jwsObject.sign(new MACSigner(secret));
 		return jwsObject.serialize();
 	}
 
-	public static String createAccessToken(String email, List<String> roles) {
+	@Override
+	public String createAccessToken(String email, List<String> roles) {
 		try {
 			return createJWT(email, roles, expireToken);
 		} catch (JOSEException e) {
@@ -52,7 +60,8 @@ public abstract class JwtUtil {
 		}
 	}
 
-	public static String createRefreshToken(String email, List<String> roles) {
+	@Override
+	public String createRefreshToken(String email, List<String> roles) {
 		try {
 			return createJWT(email, roles, expireRefreshToken);
 		} catch (JOSEException e) {
@@ -61,9 +70,10 @@ public abstract class JwtUtil {
 		}
 	}
 
-	public static AuthenticationToken parseToken(String token) {
+	@Override
+	public AuthenticationToken parseToken(String token) {
 		try {
-			byte[] secretKey = SECRET.getBytes();
+			byte[] secretKey = secret.getBytes();
 			SignedJWT signedJWT = SignedJWT.parse(token);
 			boolean verified = signedJWT.verify(new MACVerifier(secretKey));
 			if (verified) {

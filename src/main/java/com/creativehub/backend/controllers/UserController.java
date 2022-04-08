@@ -2,7 +2,7 @@ package com.creativehub.backend.controllers;
 
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.UserDto;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -12,8 +12,8 @@ import java.util.UUID;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
-@RequestMapping("/api/v1/auth/users")
-@AllArgsConstructor
+@RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
 	private final UserManager userManager;
 

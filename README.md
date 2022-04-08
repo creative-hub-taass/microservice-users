@@ -20,7 +20,7 @@ $env:COMPOSE_DOCKER_CLI_BUILD=1; $env:DOCKER_BUILDKIT=1; docker-compose up --bui
 ```shell
 minikube start
 
-kubectl apply -f path/microservice-users/Orchestration
+kubectl apply -f ./Orchestration
 
 #expose microservice-users web interface
 {minikube ip}:30001

@@ -5,7 +5,7 @@ import com.creativehub.backend.repositories.UserRepository;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.UserMapper;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserManagerImpl implements UserManager {
 	private final static String USER_NOT_FOUND_MSG = "User with email %s not found";
 	private final UserRepository userRepository;
@@ -61,6 +61,9 @@ public class UserManagerImpl implements UserManager {
 		}
 		String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 		user.setPassword(encodedPassword);
+		user.setUsername(UUID.randomUUID().toString());
+		user = userRepository.save(user);
+		user.setUsername(user.getId().toString());
 		return userMapper.userToUserDto(userRepository.save(user));
 	}
 

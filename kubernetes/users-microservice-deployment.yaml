@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: users-microservice
+  name: users-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: users-microservice
+  strategy: { }
+  template:
+    metadata:
+      labels:
+        io.kompose.service: users-microservice
+    spec:
+      containers:
+        - env:
+            - name: API_GATEWAY_URL
+              value: localhost:8080
+            - name: DB_HOST
+              value: db-users
+            - name: DB_NAME
+              value: creative-hub-users
+            - name: DB_PASSWORD
+              value: postgres
+            - name: DB_USERNAME
+              value: postgres
+            - name: JWT_SECRET
+              value: 7638792F423F4528472B4B6250655368566D597133743677397A24432646294A
+            - name: MAIL_HOST
+              value: mail-server
+            - name: MAIL_PORT
+              value: "25"
+          image: ghcr.io/creative-hub-taass/microservice-users-test:latest
+          name: users-microservice
+          ports:
+            - containerPort: 8080
+          resources: { }
+      restartPolicy: Always
