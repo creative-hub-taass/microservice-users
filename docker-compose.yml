@@ -15,7 +15,7 @@ services:
     environment:
       MAILDEV_SMTP_PORT: 1025
       MAILDEV_WEB_PORT: 1080
-  users-microservice:
+  microservice-users:
     build: .
     image: ghcr.io/creative-hub-taass/microservice-users:latest
     ports:
