@@ -18,7 +18,7 @@ spec:
       containers:
         - env:
             - name: API_GATEWAY_URL
-              value: http://localhost:8080
+              value: $GATEWAY_URL
             - name: DB_HOST
               value: db-users
             - name: DB_NAME
