@@ -89,4 +89,36 @@ public class UserManagerImpl implements UserManager {
 		if (userRepository.findByEmail(email).isPresent())
 			userRepository.findByEmail(email).get().setPassword(newPassword);
 	}
+
+	@Override
+	public UserDto addFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException {
+		if(!userRepository.findById(idFollower).isPresent() || !userRepository.findById(idFollowed).isPresent()) throw new IllegalStateException();
+
+		Optional<User> follower = userRepository.findById(idFollower);
+		Optional<User> followed = userRepository.findById(idFollowed);
+
+		follower.get().getInspirers().add(followed.get());
+		followed.get().getFans().add(follower.get());
+
+		userRepository.save(follower.get());
+		userRepository.save(followed.get());
+
+		return userMapper.userToUserDto(follower.get());
+	}
+
+	@Override
+	public UserDto deleteFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException {
+		if(!userRepository.findById(idFollower).isPresent() || !userRepository.findById(idFollowed).isPresent()) throw new IllegalStateException();
+
+		Optional<User> follower = userRepository.findById(idFollower);
+		Optional<User> followed = userRepository.findById(idFollowed);
+
+		follower.get().getInspirers().remove(followed);
+		followed.get().getFans().remove(follower);
+
+		userRepository.save(follower.get());
+		userRepository.save(followed.get());
+
+		return userMapper.userToUserDto(followed.get());
+	}
 }

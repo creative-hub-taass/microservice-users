@@ -36,4 +36,16 @@ public class UserController {
 	public void deleteUser(@PathVariable UUID id) {
 		userManager.deleteById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
 	}
+
+	@PutMapping("/addfollow/{idFollower}")
+	public UserDto addFollow(@PathVariable UUID idFollower, @RequestParam UUID idFollowed) {
+		if(!userManager.existsById(idFollower) || !userManager.existsById(idFollowed)) throw new ResponseStatusException(NOT_FOUND, "Users not found");
+		return userManager.addFollow(idFollower, idFollowed);
+	}
+
+	@PutMapping("/deletefollow/{idFollowed}")
+	public UserDto deleteFollow(@PathVariable UUID idFollowed, @RequestParam UUID idFollower) {
+		if(!userManager.existsById(idFollowed) || !userManager.existsById(idFollower)) throw new ResponseStatusException(NOT_FOUND, "Users not found");
+		return userManager.deleteFollow(idFollower, idFollowed);
+	}
 }
