@@ -17,6 +17,14 @@ spec:
     spec:
       containers:
         - env:
+            - name: RABBITMQ_HOST
+              value: $RABBITMQ_HOST
+            - name: RABBITMQ_PORT
+              value: $RABBITMQ_PORT
+            - name: RABBITMQ_USERNAME
+              value: $RABBITMQ_USERNAME
+            - name: RABBITMQ_PASSWORD
+              value: $RABBITMQ_PASSWORD
             - name: API_GATEWAY_URL
               value: $GATEWAY_URL
             - name: DB_HOST
