@@ -23,6 +23,8 @@ public interface UserManager extends UserDetailsService {
 
 	UserDto signUpUser(User user) throws IllegalStateException;
 
+	void setupRootUser();
+
 	void enableUser(UUID id);
 
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
@@ -36,4 +38,10 @@ public interface UserManager extends UserDetailsService {
 	UserDto addFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException;
 
 	UserDto deleteFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException;
+
+
+	/**
+	 * Only for testing purposes
+	 */
+	UserDto saveUser(UserDto userDto);
 }

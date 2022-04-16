@@ -12,19 +12,19 @@ import java.util.stream.Collectors;
 public interface UserMapper {
 	User userDtoToUser(UserDto userDto);
 
-	@Mapping(source = "creator.avatar", target = "creator.avatarUrl")
 	@Mapping(target = "inspirerIds", expression = "java(inspirersToInspirerIds(user.getInspirers()))")
 	@Mapping(target = "fanIds", expression = "java(fansToFanIds(user.getFans()))")
 	UserDto userToUserDto(User user);
 
-	@Mapping(source = "creator.avatarUrl", target = "creator.avatar")
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void updateUserFromUserDto(UserDto userDto, @MappingTarget User user);
 
+	@SuppressWarnings("unused")
 	default Set<UUID> inspirersToInspirerIds(Set<User> inspirers) {
 		return inspirers.stream().map(User::getId).collect(Collectors.toSet());
 	}
 
+	@SuppressWarnings("unused")
 	default Set<UUID> fansToFanIds(Set<User> fans) {
 		return fans.stream().map(User::getId).collect(Collectors.toSet());
 	}

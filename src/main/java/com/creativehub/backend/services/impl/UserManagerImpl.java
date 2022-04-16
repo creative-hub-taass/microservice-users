@@ -1,6 +1,7 @@
 package com.creativehub.backend.services.impl;
 
 import com.creativehub.backend.models.User;
+import com.creativehub.backend.models.enums.Role;
 import com.creativehub.backend.repositories.UserRepository;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.UserDto;
@@ -67,6 +68,18 @@ public class UserManagerImpl implements UserManager {
 		return userMapper.userToUserDto(userRepository.save(user));
 	}
 
+	public void setupRootUser() {
+		User user = new User();
+		user.setNickname("root");
+		user.setUsername("root");
+		user.setEmail("root@creativehub.com");
+		user.setRole(Role.ADMIN);
+		user.setEnabled(true);
+		String encodedPassword = bCryptPasswordEncoder.encode("root");
+		user.setPassword(encodedPassword);
+		userRepository.save(user);
+	}
+
 	public void enableUser(UUID id) {
 		userRepository.enableUser(id);
 	}
@@ -92,33 +105,39 @@ public class UserManagerImpl implements UserManager {
 
 	@Override
 	public UserDto addFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException {
-		if(!userRepository.findById(idFollower).isPresent() || !userRepository.findById(idFollowed).isPresent()) throw new IllegalStateException();
-
 		Optional<User> follower = userRepository.findById(idFollower);
 		Optional<User> followed = userRepository.findById(idFollowed);
-
+		if (follower.isEmpty() || followed.isEmpty())
+			throw new IllegalStateException();
 		follower.get().getInspirers().add(followed.get());
 		followed.get().getFans().add(follower.get());
-
 		userRepository.save(follower.get());
 		userRepository.save(followed.get());
-
 		return userMapper.userToUserDto(follower.get());
 	}
 
 	@Override
 	public UserDto deleteFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException {
-		if(!userRepository.findById(idFollower).isPresent() || !userRepository.findById(idFollowed).isPresent()) throw new IllegalStateException();
-
 		Optional<User> follower = userRepository.findById(idFollower);
 		Optional<User> followed = userRepository.findById(idFollowed);
-
-		follower.get().getInspirers().remove(followed);
-		followed.get().getFans().remove(follower);
-
+		if (follower.isEmpty() || followed.isEmpty())
+			throw new IllegalStateException();
+		follower.get().getInspirers().remove(followed.get());
+		followed.get().getFans().remove(follower.get());
 		userRepository.save(follower.get());
 		userRepository.save(followed.get());
-
 		return userMapper.userToUserDto(followed.get());
+	}
+
+	/**
+	 * Only for testing purposes
+	 */
+	@Override
+	public UserDto saveUser(UserDto userDto) {
+		User user = userMapper.userDtoToUser(userDto);
+		// use the username as password
+		String encodedPassword = bCryptPasswordEncoder.encode(user.getUsername());
+		user.setPassword(encodedPassword);
+		return userMapper.userToUserDto(userRepository.save(user));
 	}
 }

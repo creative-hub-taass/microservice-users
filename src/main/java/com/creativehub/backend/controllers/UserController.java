@@ -22,6 +22,14 @@ public class UserController {
 		return userManager.findAll();
 	}
 
+	/**
+	 * Only for testing purposes
+	 */
+	@PostMapping("/")
+	public UserDto saveUser(@RequestBody UserDto userDto) {
+		return userManager.saveUser(userDto);
+	}
+
 	@GetMapping("/{id}")
 	public UserDto getUser(@PathVariable UUID id) {
 		return userManager.findById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
@@ -39,13 +47,15 @@ public class UserController {
 
 	@PutMapping("/addfollow/{idFollower}")
 	public UserDto addFollow(@PathVariable UUID idFollower, @RequestParam UUID idFollowed) {
-		if(!userManager.existsById(idFollower) || !userManager.existsById(idFollowed)) throw new ResponseStatusException(NOT_FOUND, "Users not found");
+		if (!userManager.existsById(idFollower) || !userManager.existsById(idFollowed))
+			throw new ResponseStatusException(NOT_FOUND, "Users not found");
 		return userManager.addFollow(idFollower, idFollowed);
 	}
 
 	@PutMapping("/deletefollow/{idFollowed}")
 	public UserDto deleteFollow(@PathVariable UUID idFollowed, @RequestParam UUID idFollower) {
-		if(!userManager.existsById(idFollowed) || !userManager.existsById(idFollower)) throw new ResponseStatusException(NOT_FOUND, "Users not found");
+		if (!userManager.existsById(idFollowed) || !userManager.existsById(idFollower))
+			throw new ResponseStatusException(NOT_FOUND, "Users not found");
 		return userManager.deleteFollow(idFollower, idFollowed);
 	}
 }

@@ -15,6 +15,6 @@ public class CreatorDto implements Serializable {
 	private final Date birthDate;
 	private final String bio;
 	private final CreatorType creatorType;
-	private final String avatarUrl;
+	private final String avatar;
 	private final String paymentEmail;
 }
