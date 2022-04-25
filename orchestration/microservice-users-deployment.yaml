@@ -20,7 +20,7 @@ spec:
             - name: RABBITMQ_HOST
               value: rabbitmq
             - name: RABBITMQ_PORT
-              value: 5672
+              value: "5672"
             - name: RABBITMQ_USERNAME
               value: guest
             - name: RABBITMQ_PASSWORD
