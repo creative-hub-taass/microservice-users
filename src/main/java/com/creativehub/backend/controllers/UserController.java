@@ -1,5 +1,6 @@
 package com.creativehub.backend.controllers;
 
+import com.creativehub.backend.services.ProducerService;
 import com.creativehub.backend.services.UserManager;
 import com.creativehub.backend.services.dto.UserDto;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequiredArgsConstructor
 public class UserController {
 	private final UserManager userManager;
+	private final ProducerService producerService;
 
 	@GetMapping("/")
 	public List<UserDto> getAllUsers() {
@@ -42,6 +44,7 @@ public class UserController {
 
 	@DeleteMapping("/{id}")
 	public void deleteUser(@PathVariable UUID id) {
+		if(userManager.findById(id).get().getCreator()!=null) producerService.sendMessage(id);
 		userManager.deleteById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
 	}
 

@@ -29,6 +29,10 @@ services:
       - MAIL_PORT=1025
       - API_GATEWAY_URL=http://localhost:8080
       - JWT_SECRET=7638792F423F4528472B4B6250655368566D597133743677397A24432646294A
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
     depends_on:
       - db-users
       - mail-server
