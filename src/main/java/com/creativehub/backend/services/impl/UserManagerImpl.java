@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -127,6 +128,24 @@ public class UserManagerImpl implements UserManager {
 		userRepository.save(follower.get());
 		userRepository.save(followed.get());
 		return userMapper.userToUserDto(followed.get());
+	}
+
+	@Override
+	public List<UserDto> getFollowed(UUID id) {
+		return userRepository.findById(id).stream()
+				.map(User::getInspirers)
+				.flatMap(Collection::stream)
+				.map(userMapper::userToUserDto)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserDto> getFollowers(UUID id) {
+		return userRepository.findById(id).stream()
+				.map(User::getFans)
+				.flatMap(Collection::stream)
+				.map(userMapper::userToUserDto)
+				.collect(Collectors.toList());
 	}
 
 	/**

@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
@@ -44,21 +45,39 @@ public class UserController {
 
 	@DeleteMapping("/{id}")
 	public void deleteUser(@PathVariable UUID id) {
-		if(userManager.findById(id).get().getCreator()!=null) producerService.sendMessage(id);
 		userManager.deleteById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
+		userManager.findById(id).ifPresent(userDto -> producerService.sendMessage(id));
 	}
 
-	@PutMapping("/addfollow/{idFollower}")
-	public UserDto addFollow(@PathVariable UUID idFollower, @RequestParam UUID idFollowed) {
-		if (!userManager.existsById(idFollower) || !userManager.existsById(idFollowed))
-			throw new ResponseStatusException(NOT_FOUND, "Users not found");
+	@GetMapping("/{id}/followed")
+	public List<UserDto> getFollowed(@PathVariable UUID id) {
+		if (!userManager.existsById(id))
+			throw new ResponseStatusException(NOT_FOUND, "User not found");
+		return userManager.getFollowed(id);
+	}
+
+	@GetMapping("/{id}/followers")
+	public List<UserDto> getFollowers(@PathVariable UUID id) {
+		if (!userManager.existsById(id))
+			throw new ResponseStatusException(NOT_FOUND, "User not found");
+		return userManager.getFollowers(id);
+	}
+
+	@PutMapping("/{idFollower}/follow/{idFollowed}")
+	public UserDto addFollow(@PathVariable UUID idFollower, @PathVariable UUID idFollowed) {
+		if (!userManager.existsById(idFollower))
+			throw new ResponseStatusException(NOT_FOUND, "User not found");
+		if (!userManager.existsById(idFollowed))
+			throw new ResponseStatusException(BAD_REQUEST, "Followed user not found");
 		return userManager.addFollow(idFollower, idFollowed);
 	}
 
-	@PutMapping("/deletefollow/{idFollowed}")
-	public UserDto deleteFollow(@PathVariable UUID idFollowed, @RequestParam UUID idFollower) {
-		if (!userManager.existsById(idFollowed) || !userManager.existsById(idFollower))
-			throw new ResponseStatusException(NOT_FOUND, "Users not found");
+	@PutMapping("{idFollower}/unfollow/{idFollowed}")
+	public UserDto deleteFollow(@PathVariable UUID idFollower, @PathVariable UUID idFollowed) {
+		if (!userManager.existsById(idFollower))
+			throw new ResponseStatusException(NOT_FOUND, "User not found");
+		if (!userManager.existsById(idFollowed))
+			throw new ResponseStatusException(BAD_REQUEST, "Followed user not found");
 		return userManager.deleteFollow(idFollower, idFollowed);
 	}
 }

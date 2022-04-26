@@ -39,6 +39,9 @@ public interface UserManager extends UserDetailsService {
 
 	UserDto deleteFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException;
 
+	List<UserDto> getFollowed(UUID id);
+
+	List<UserDto> getFollowers(UUID id);
 
 	/**
 	 * Only for testing purposes
