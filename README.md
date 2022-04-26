@@ -45,10 +45,6 @@ minikube tunnel
 ```shell
 okteto kubeconfig
 export GATEWAY_URL=https://api-gateway-acontenti.cloud.okteto.net
-export RABBITMQ_HOST=
-export RABBITMQ_PORT=
-export RABBITMQ_USERNAME=
-export RABBITMQ_PASSWORD=
 for f in ./orchestration/*.yaml; do cat $f | envsubst | kubectl apply -f -; done
 ```
 
