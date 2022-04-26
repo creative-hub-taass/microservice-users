@@ -46,7 +46,7 @@ public class UserController {
 	@DeleteMapping("/{id}")
 	public void deleteUser(@PathVariable UUID id) {
 		userManager.deleteById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
-		userManager.findById(id).ifPresent(userDto -> producerService.sendMessage(id));
+		producerService.sendMessage(id);
 	}
 
 	@GetMapping("/{id}/followed")
