@@ -46,5 +46,5 @@ public interface UserManager extends UserDetailsService {
 	/**
 	 * Only for testing purposes
 	 */
-	UserDto saveUser(UserDto userDto);
+	Optional<UserDto> saveUser(UserDto userDto);
 }

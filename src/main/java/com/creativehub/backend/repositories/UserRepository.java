@@ -4,6 +4,7 @@ import com.creativehub.backend.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	@Modifying
 	@Query("UPDATE User user SET user.enabled = TRUE WHERE user.id = ?1")
 	void enableUser(UUID id);
+
+	boolean existsByUsernameOrEmail(@NonNull String username, @NonNull String email);
 }

@@ -31,7 +31,7 @@ public class UserController {
 	 */
 	@PostMapping("/")
 	public UserDto saveUser(@RequestBody UserDto userDto) {
-		return userManager.saveUser(userDto);
+		return userManager.saveUser(userDto).orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "E-mail or username alredy taken"));
 	}
 
 	@GetMapping("/{id}")

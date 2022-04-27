@@ -152,11 +152,13 @@ public class UserManagerImpl implements UserManager {
 	 * Only for testing purposes
 	 */
 	@Override
-	public UserDto saveUser(UserDto userDto) {
+	public Optional<UserDto> saveUser(UserDto userDto) {
+		if (userRepository.existsByUsernameOrEmail(userDto.getUsername(), userDto.getEmail()))
+			return Optional.empty();
 		User user = userMapper.userDtoToUser(userDto);
 		// use the username as password
 		String encodedPassword = bCryptPasswordEncoder.encode(user.getUsername());
 		user.setPassword(encodedPassword);
-		return userMapper.userToUserDto(userRepository.save(user));
+		return Optional.of(userMapper.userToUserDto(userRepository.save(user)));
 	}
 }
