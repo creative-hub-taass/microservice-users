@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/api/v1/users/auth")
+@RequestMapping(path = "/api/v1/users/-/auth")
 @RequiredArgsConstructor
 public class RegistrationLoginController {
 	private final RegistrationService registrationService;

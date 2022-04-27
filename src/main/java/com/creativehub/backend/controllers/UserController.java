@@ -2,6 +2,7 @@ package com.creativehub.backend.controllers;
 
 import com.creativehub.backend.services.ProducerService;
 import com.creativehub.backend.services.UserManager;
+import com.creativehub.backend.services.dto.PublicUserDto;
 import com.creativehub.backend.services.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,14 @@ public class UserController {
 	@GetMapping("/{id}")
 	public UserDto getUser(@PathVariable UUID id) {
 		return userManager.findById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
+	}
+
+	@GetMapping("/-/{id}")
+	public PublicUserDto getCreator(@PathVariable UUID id) {
+		return userManager.findById(id)
+				.map(PublicUserDto::new)
+				.filter(PublicUserDto::isCreator)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
 	}
 
 	@PutMapping("/{id}")
