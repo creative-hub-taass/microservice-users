@@ -57,8 +57,7 @@ public class UserManagerImpl implements UserManager {
 	}
 
 	public UserDto signUpUser(User user) throws IllegalStateException {
-		boolean userExists = userRepository.findByEmail(user.getEmail()).isPresent();
-		if (userExists) {
+		if (userRepository.existsByEmail(user.getEmail())) {
 			throw new IllegalStateException("Email already taken");
 		}
 		String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
@@ -70,6 +69,8 @@ public class UserManagerImpl implements UserManager {
 	}
 
 	public void setupRootUser() {
+		if (userRepository.existsByUsernameOrEmail("root", "root@creativehub.com"))
+			return;
 		User user = new User();
 		user.setNickname("root");
 		user.setUsername("root");
@@ -100,8 +101,7 @@ public class UserManagerImpl implements UserManager {
 	}
 
 	public void changePassword(String email, String newPassword) {
-		if (userRepository.findByEmail(email).isPresent())
-			userRepository.findByEmail(email).get().setPassword(newPassword);
+		userRepository.findByEmail(email).ifPresent(user -> user.setPassword(newPassword));
 	}
 
 	@Override
