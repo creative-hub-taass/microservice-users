@@ -47,6 +47,13 @@ public class UserController {
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
 	}
 
+	@PostMapping("/-/public")
+	public List<PublicUserDto> getUsers(@RequestBody List<UUID> uuidList) {
+		List<PublicUserDto> result = userManager.getUsers(uuidList);
+		if (result == null) throw new ResponseStatusException(NOT_FOUND, "Users not found");
+		return result;
+	}
+
 	@PutMapping("/{id}")
 	public UserDto updateUser(@PathVariable UUID id, @RequestBody UserDto user) {
 		return userManager.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));

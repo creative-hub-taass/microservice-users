@@ -1,11 +1,13 @@
 package com.creativehub.backend.services;
 
 import com.creativehub.backend.models.User;
+import com.creativehub.backend.services.dto.PublicUserDto;
 import com.creativehub.backend.services.dto.UserDto;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,6 +45,7 @@ public interface UserManager extends UserDetailsService {
 
 	List<UserDto> getFollowers(UUID id);
 
+	List<PublicUserDto> getUsers(List<UUID> ids);
 	/**
 	 * Only for testing purposes
 	 */
