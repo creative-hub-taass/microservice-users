@@ -4,6 +4,7 @@ import com.creativehub.backend.models.User;
 import com.creativehub.backend.models.enums.Role;
 import com.creativehub.backend.repositories.UserRepository;
 import com.creativehub.backend.services.UserManager;
+import com.creativehub.backend.services.dto.PublicUserDto;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -147,6 +145,14 @@ public class UserManagerImpl implements UserManager {
 				.map(userMapper::userToUserDto)
 				.collect(Collectors.toList());
 	}
+
+	@Override
+	public List<PublicUserDto> getUsers(List<UUID> ids) {
+		ArrayList<PublicUserDto> result = new ArrayList<>();
+		for(UUID id : ids) { result.add(new PublicUserDto(userMapper.userToUserDto(userRepository.findById(id).get()))); }
+		return result;
+	}
+
 
 	/**
 	 * Only for testing purposes
