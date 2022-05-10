@@ -58,6 +58,14 @@ public class UserController {
 		return userManager.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
 	}
 
+	@PostMapping("/{id}/changepassword")
+	public void changePassword(@PathVariable UUID id, @RequestParam String oldPassword, @RequestParam String newPassword) {
+		Boolean result = userManager.changePassword(id, oldPassword, newPassword);
+		if (result != null) {
+			if (!result) throw new ResponseStatusException(BAD_REQUEST, "Old password doesn't match");
+		} else throw new ResponseStatusException(NOT_FOUND, "User not found");
+	}
+
 	@DeleteMapping("/{id}")
 	public void deleteUser(@PathVariable UUID id) {
 		userManager.deleteById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));

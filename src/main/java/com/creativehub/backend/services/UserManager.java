@@ -32,7 +32,7 @@ public interface UserManager extends UserDetailsService {
 
 	Optional<User> getUserByEmail(String email);
 
-	void changePassword(String email, String newPassword);
+	Boolean changePassword(UUID uuid, String oldPassword, String newPassword);
 
 	UserDto addFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException;
 

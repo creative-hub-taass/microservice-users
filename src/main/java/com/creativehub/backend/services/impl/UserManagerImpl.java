@@ -27,6 +27,7 @@ public class UserManagerImpl implements UserManager {
 	private final UserMapper userMapper;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+	@Override
 	public List<UserDto> findAll() {
 		return userRepository.findAll().stream().map(userMapper::userToUserDto).collect(Collectors.toList());
 	}
@@ -57,6 +58,7 @@ public class UserManagerImpl implements UserManager {
 		});
 	}
 
+	@Override
 	public void signUpUser(User user) throws IllegalStateException {
 		if (userRepository.existsByEmail(user.getEmail())) {
 			throw new IllegalStateException("Email already taken");
@@ -69,6 +71,7 @@ public class UserManagerImpl implements UserManager {
 		userRepository.save(user);
 	}
 
+	@Override
 	public void setupRootUser() {
 		if (userRepository.existsByUsernameOrEmail("root", "root@creativehub.com"))
 			return;
@@ -83,6 +86,7 @@ public class UserManagerImpl implements UserManager {
 		userRepository.save(user);
 	}
 
+	@Override
 	public void enableUser(UUID id) {
 		userRepository.enableUser(id);
 	}
@@ -93,12 +97,22 @@ public class UserManagerImpl implements UserManager {
 				new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
 	}
 
+	@Override
 	public Optional<User> getUserByEmail(String email) {
 		return userRepository.findByEmail(email);
 	}
 
-	public void changePassword(String email, String newPassword) {
-		userRepository.findByEmail(email).ifPresent(user -> user.setPassword(newPassword));
+	@Override
+	public Boolean changePassword(UUID uuid, String oldPassword, String newPassword) {
+		Optional<User> userOptional = userRepository.findById(uuid);
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			if (bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+				user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+				userRepository.save(user);
+				return true;
+			} else return false;
+		} else return null;
 	}
 
 	@Override
