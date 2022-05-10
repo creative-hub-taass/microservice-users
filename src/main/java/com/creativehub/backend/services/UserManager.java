@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,7 +22,7 @@ public interface UserManager extends UserDetailsService {
 
 	Optional<UserDto> updateUser(UUID id, UserDto update);
 
-	UserDto signUpUser(User user) throws IllegalStateException;
+	void signUpUser(User user) throws IllegalStateException;
 
 	void setupRootUser();
 
@@ -32,8 +31,6 @@ public interface UserManager extends UserDetailsService {
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
 	Optional<User> getUserByEmail(String email);
-
-	Optional<UUID> getId(String email);
 
 	void changePassword(String email, String newPassword);
 
@@ -45,7 +42,8 @@ public interface UserManager extends UserDetailsService {
 
 	List<UserDto> getFollowers(UUID id);
 
-	List<PublicUserDto> getUsers(List<UUID> ids);
+	List<PublicUserDto> getPublicUsers(List<UUID> ids);
+
 	/**
 	 * Only for testing purposes
 	 */

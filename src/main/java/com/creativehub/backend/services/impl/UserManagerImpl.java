@@ -13,7 +13,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,7 +57,7 @@ public class UserManagerImpl implements UserManager {
 		});
 	}
 
-	public UserDto signUpUser(User user) throws IllegalStateException {
+	public void signUpUser(User user) throws IllegalStateException {
 		if (userRepository.existsByEmail(user.getEmail())) {
 			throw new IllegalStateException("Email already taken");
 		}
@@ -63,7 +66,7 @@ public class UserManagerImpl implements UserManager {
 		user.setUsername(UUID.randomUUID().toString());
 		user = userRepository.save(user);
 		user.setUsername(user.getId().toString());
-		return userMapper.userToUserDto(userRepository.save(user));
+		userRepository.save(user);
 	}
 
 	public void setupRootUser() {
@@ -92,10 +95,6 @@ public class UserManagerImpl implements UserManager {
 
 	public Optional<User> getUserByEmail(String email) {
 		return userRepository.findByEmail(email);
-	}
-
-	public Optional<UUID> getId(String email) {
-		return userRepository.findByEmail(email).map(User::getId);
 	}
 
 	public void changePassword(String email, String newPassword) {
@@ -147,10 +146,9 @@ public class UserManagerImpl implements UserManager {
 	}
 
 	@Override
-	public List<PublicUserDto> getUsers(List<UUID> ids) {
-		ArrayList<PublicUserDto> result = new ArrayList<>();
-		for(UUID id : ids) { result.add(new PublicUserDto(userMapper.userToUserDto(userRepository.findById(id).get()))); }
-		return result;
+	public List<PublicUserDto> getPublicUsers(List<UUID> ids) {
+		return ids.stream().map(userRepository::findById).filter(Optional::isPresent)
+				.map(user -> new PublicUserDto(userMapper.userToUserDto(user.get()))).collect(Collectors.toList());
 	}
 
 
