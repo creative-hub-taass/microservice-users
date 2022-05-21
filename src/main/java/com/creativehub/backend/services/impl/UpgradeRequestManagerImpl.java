@@ -69,6 +69,7 @@ public class UpgradeRequestManagerImpl implements UpgradeRequestManager {
 				creator.setAvatar(request.getAvatar());
 				creator.setCreatorType(request.getCreatorType());
 				creator.setBio(request.getBio());
+				creator.setPaymentEmail(request.getPaymentEmail());
 				UUID userId = request.getUser().getId();
 				User user = userRepository.getById(userId);
 				user.setCreator(creator);
