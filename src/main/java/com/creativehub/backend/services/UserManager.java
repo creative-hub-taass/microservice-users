@@ -48,4 +48,9 @@ public interface UserManager extends UserDetailsService {
 	 * Only for testing purposes
 	 */
 	Optional<UserDto> saveUser(UserDto userDto);
+
+	/**
+	 * Only for testing purposes
+	 */
+	void addFollows(List<UUID[]> follows);
 }

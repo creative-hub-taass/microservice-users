@@ -117,28 +117,22 @@ public class UserManagerImpl implements UserManager {
 
 	@Override
 	public UserDto addFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException {
-		Optional<User> follower = userRepository.findById(idFollower);
-		Optional<User> followed = userRepository.findById(idFollowed);
-		if (follower.isEmpty() || followed.isEmpty())
-			throw new IllegalStateException();
-		follower.get().getInspirers().add(followed.get());
-		followed.get().getFans().add(follower.get());
-		userRepository.save(follower.get());
-		userRepository.save(followed.get());
-		return userMapper.userToUserDto(follower.get());
+		Optional<User> _follower = userRepository.findById(idFollower);
+		Optional<User> _followed = userRepository.findById(idFollowed);
+		User follower = _follower.orElseThrow(IllegalStateException::new);
+		User followed = _followed.orElseThrow(IllegalStateException::new);
+		follower.getInspirers().add(followed);
+		return userMapper.userToUserDto(userRepository.save(follower));
 	}
 
 	@Override
 	public UserDto deleteFollow(UUID idFollower, UUID idFollowed) throws IllegalStateException {
-		Optional<User> follower = userRepository.findById(idFollower);
-		Optional<User> followed = userRepository.findById(idFollowed);
-		if (follower.isEmpty() || followed.isEmpty())
-			throw new IllegalStateException();
-		follower.get().getInspirers().remove(followed.get());
-		followed.get().getFans().remove(follower.get());
-		userRepository.save(follower.get());
-		userRepository.save(followed.get());
-		return userMapper.userToUserDto(followed.get());
+		Optional<User> _follower = userRepository.findById(idFollower);
+		Optional<User> _followed = userRepository.findById(idFollowed);
+		User follower = _follower.orElseThrow(IllegalStateException::new);
+		User followed = _followed.orElseThrow(IllegalStateException::new);
+		follower.getInspirers().remove(followed);
+		return userMapper.userToUserDto(userRepository.save(follower));
 	}
 
 	@Override
@@ -180,5 +174,18 @@ public class UserManagerImpl implements UserManager {
 		user.setEnabled(true);
 		user.setRole(Role.USER);
 		return Optional.of(userMapper.userToUserDto(userRepository.save(user)));
+	}
+
+	/**
+	 * Only for testing purposes
+	 */
+	@Override
+	public void addFollows(List<UUID[]> follows) {
+		for (UUID[] follow : follows) {
+			try {
+				addFollow(follow[0], follow[1]);
+			} catch (IllegalStateException ignored) {
+			}
+		}
 	}
 }

@@ -103,4 +103,12 @@ public class UserController {
 			throw new ResponseStatusException(BAD_REQUEST, "Followed user not found");
 		return userManager.deleteFollow(idFollower, idFollowed);
 	}
+
+	/**
+	 * Only for testing purposes
+	 */
+	@PutMapping("/follows")
+	public void addFollows(@RequestBody List<UUID[]> follows) {
+		userManager.addFollows(follows);
+	}
 }
