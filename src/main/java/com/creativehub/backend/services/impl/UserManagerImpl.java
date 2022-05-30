@@ -177,6 +177,8 @@ public class UserManagerImpl implements UserManager {
 		// use the username as password
 		String encodedPassword = bCryptPasswordEncoder.encode(user.getUsername());
 		user.setPassword(encodedPassword);
+		user.setEnabled(true);
+		user.setRole(Role.USER);
 		return Optional.of(userMapper.userToUserDto(userRepository.save(user)));
 	}
 }
