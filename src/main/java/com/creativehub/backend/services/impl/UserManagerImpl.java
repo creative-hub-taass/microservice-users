@@ -155,8 +155,10 @@ public class UserManagerImpl implements UserManager {
 
 	@Override
 	public List<PublicUserDto> getPublicUsers(List<UUID> ids) {
-		return ids.stream().map(userRepository::findById).filter(Optional::isPresent)
-				.map(user -> new PublicUserDto(userMapper.userToUserDto(user.get()))).collect(Collectors.toList());
+		return ids.stream().map(userRepository::findById)
+				.map(user -> user.map(userMapper::userToUserDto).map(PublicUserDto::new))
+				.map(it -> it.orElse(null))
+				.collect(Collectors.toList());
 	}
 
 
