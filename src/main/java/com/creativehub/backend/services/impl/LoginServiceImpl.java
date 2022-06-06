@@ -9,7 +9,7 @@ import com.creativehub.backend.services.dto.LoginRequest;
 import com.creativehub.backend.services.dto.SocialLoginRequest;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.UserMapper;
-import com.creativehub.backend.util.AuthenticationToken;
+import com.creativehub.backend.util.TokenData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -39,9 +39,9 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public ResponseEntity<String> refresh(String token) {
-		AuthenticationToken authenticationToken = jwtUtil.parseToken(token);
-		if (authenticationToken != null) {
-			String accessToken = jwtUtil.createAccessToken(authenticationToken.getPrincipal(), authenticationToken.getRoles());
+		TokenData tokenData = jwtUtil.parseToken(token);
+		if (tokenData != null) {
+			String accessToken = jwtUtil.createAccessToken(tokenData);
 			return ResponseEntity.ok(accessToken);
 		} else return ResponseEntity.badRequest().body("Invalid refresh token");
 	}
@@ -72,8 +72,9 @@ public class LoginServiceImpl implements LoginService {
 
 	private Pair<UserDto, HttpHeaders> getResponseData(User user) {
 		List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-		String accessToken = jwtUtil.createAccessToken(user.getUsername(), roles);
-		String refreshToken = jwtUtil.createRefreshToken(user.getUsername(), roles);
+		TokenData tokenData = new TokenData(user.getId().toString(), roles);
+		String accessToken = jwtUtil.createAccessToken(tokenData);
+		String refreshToken = jwtUtil.createRefreshToken(tokenData);
 		if (accessToken != null && refreshToken != null) {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("X-ACCESS-TOKEN", accessToken);

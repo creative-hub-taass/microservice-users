@@ -1,7 +1,7 @@
 package com.creativehub.backend.services.impl;
 
 import com.creativehub.backend.services.JwtUtil;
-import com.creativehub.backend.util.AuthenticationToken;
+import com.creativehub.backend.util.TokenData;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -27,7 +26,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,10 +38,10 @@ public class JwtUtilImpl implements JwtUtil {
 	private String secret;
 
 	@Override
-	public String createJWT(String email, List<String> roles, Duration expireToken) throws JOSEException {
+	public String createJWT(TokenData tokenData, Duration expireToken) throws JOSEException {
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
-				.subject(email)
-				.claim("roles", roles)
+				.subject(tokenData.getSubject())
+				.claim("roles", tokenData.getRoles())
 				.expirationTime(Date.from(Instant.now().plus(expireToken)))
 				.issueTime(new Date())
 				.build();
@@ -54,9 +52,9 @@ public class JwtUtilImpl implements JwtUtil {
 	}
 
 	@Override
-	public String createAccessToken(String email, List<String> roles) {
+	public String createAccessToken(TokenData tokenData) {
 		try {
-			return createJWT(email, roles, expireToken);
+			return createJWT(tokenData, expireToken);
 		} catch (JOSEException e) {
 			log.debug("Error creating JWT", e);
 			return null;
@@ -64,9 +62,9 @@ public class JwtUtilImpl implements JwtUtil {
 	}
 
 	@Override
-	public String createRefreshToken(String email, List<String> roles) {
+	public String createRefreshToken(TokenData tokenData) {
 		try {
-			return createJWT(email, roles, expireRefreshToken);
+			return createJWT(tokenData, expireRefreshToken);
 		} catch (JOSEException e) {
 			log.debug("Error creating refresh JWT", e);
 			return null;
@@ -74,7 +72,7 @@ public class JwtUtilImpl implements JwtUtil {
 	}
 
 	@Override
-	public AuthenticationToken parseToken(String token) {
+	public TokenData parseToken(String token) {
 		try {
 			byte[] secretKey = secret.getBytes();
 			SignedJWT signedJWT = SignedJWT.parse(token);
@@ -85,10 +83,9 @@ public class JwtUtilImpl implements JwtUtil {
 				jwtProcessor.setJWSKeySelector(keySelector);
 				jwtProcessor.process(signedJWT, null);
 				JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-				String email = claims.getSubject();
+				String subject = claims.getSubject();
 				List<String> roles = claims.getStringListClaim("roles");
-				var authorities = roles == null ? null : roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-				return new AuthenticationToken(email, null, authorities);
+				return new TokenData(subject, roles);
 			}
 		} catch (BadJOSEException | JOSEException | ParseException e) {
 			log.debug("Error auth token: " + token, e);
