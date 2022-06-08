@@ -1,5 +1,6 @@
 package com.creativehub.backend.config;
 
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -17,6 +18,8 @@ public class RabbitMQConfig {
 	String username;
 	@Value("${spring.rabbitmq.password}")
 	String password;
+	@Value("${fanout.name}")
+	private String fanoutName;
 
 	@Bean
 	CachingConnectionFactory connectionFactory() {
@@ -36,5 +39,10 @@ public class RabbitMQConfig {
 		final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
 		rabbitTemplate.setMessageConverter(jsonMessageConverter());
 		return rabbitTemplate;
+	}
+
+	@Bean
+	public FanoutExchange exchange() {
+		return new FanoutExchange(fanoutName);
 	}
 }
