@@ -44,7 +44,7 @@ public class User implements UserDetails {
 	private Creator creator;
 
 	@ToString.Exclude
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany
 	@JoinTable(name = "followers",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "following_id", referencedColumnName = "id"))
@@ -84,5 +84,12 @@ public class User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	@PreRemove
+	public void preRemove() {
+		for (User fan : fans) {
+			fan.inspirers.remove(this);
+		}
 	}
 }
